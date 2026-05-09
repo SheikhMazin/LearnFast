@@ -27,19 +27,23 @@ def calculate_confidence_score(
     correctness_history: list,
     avg_time_seconds: float,
 ) -> float:
-    
-    
-    recent = correctness_history[-5:]
-    acc = sum(recent) / max(len(recent), 1)
-    
-    streak_bonus = min(streak * 0.1, 0.3)
-    
-    time_factor = 1.0 if avg_time_seconds < 15 else 0.8 if avg_time_seconds < 60 else 0.6
-    
-    score = min(acc * time_factor + streak_bonus, 1.0)
-    
-    return score
     """
+    Compute a confidence score (0.0–1.0) from session performance metrics.
+
+    What to do:
+    - Use only the last 5 entries of correctness_history to keep the score reactive:
+        recent = correctness_history[-5:]
+        accuracy = sum(recent) / max(len(recent), 1)
+    - Apply a streak bonus (capped so one long streak can't max out the score alone):
+        streak_bonus = min(streak * 0.1, 0.3)
+    - Apply a time factor (fast + correct = higher confidence):
+        time_factor = 1.0   if avg_time_seconds < 15
+                    = 0.8   if 15 <= avg_time_seconds < 60
+                    = 0.6   if avg_time_seconds >= 60
+    - Combine and clamp to [0.0, 1.0]:
+        score = min(accuracy * time_factor + streak_bonus, 1.0)
+    - Return score
+
     Args:
         streak:             Current consecutive correct answer count
         correctness_history: List of bools in chronological order (True = correct)
@@ -48,14 +52,29 @@ def calculate_confidence_score(
     Returns:
         float: Confidence score 0.0–1.0
     """
-    
+    pass
 
 
 def adjust_difficulty(current_difficulty: int, session_stats: dict) -> int:
-    
-    
     """
-        
+    Core adaptive algorithm — decide whether to raise, lower, or hold difficulty.
+
+    What to do:
+    - Extract from session_stats:
+        streak              = session_stats["streak"]
+        correctness_history = session_stats["correctness_history"]
+        avg_time_seconds    = session_stats["avg_time_seconds"]
+    - Call calculate_confidence_score(streak, correctness_history, avg_time_seconds)
+    - Apply rules in order:
+        1. IF confidence >= 0.8 AND streak >= 3:
+               new_difficulty = min(current_difficulty + 1, DIFFICULTY_MAX)
+        2. ELIF confidence <= 0.4 OR (len(correctness_history) >= 3 AND
+                                      not any(correctness_history[-3:])):
+               new_difficulty = max(current_difficulty - 1, DIFFICULTY_MIN)
+        3. ELSE:
+               new_difficulty = current_difficulty  (hold)
+    - Return new_difficulty
+
     Args:
         current_difficulty: Current level (1–5)
         session_stats:      Dict with keys: streak (int), correctness_history (list[bool]),
@@ -64,17 +83,7 @@ def adjust_difficulty(current_difficulty: int, session_stats: dict) -> int:
     Returns:
         int: New difficulty level (1–5)
     """
-    
-    streak = session_stats["streak"]
-    chist = session_stats["correctness_history"]
-    avTimeS = session_stats["avg_time_seconds"]
-    
-    if confidence >= 0.8 and streak >= 3:
-        new_diff = min(current_difficulty + 1, DIFFICULTY_MAX)
-    elif confidence <= 0.4 or (len(chist) >= 3 and not any(chist[-3:])):
-        new_diff = max(current_difficulty - 1, DIFFICULTY_MIN)
-    else:
-        new_diff = current_difficulty
+    pass
 
 
 def select_question_type(difficulty: int, last_question_type: str = None) -> str:
@@ -95,18 +104,15 @@ def select_question_type(difficulty: int, last_question_type: str = None) -> str
     Returns:
         str: A question type key (e.g. "fill_blank")
     """
-    
-    candidates = DIFFICULTY_QUESTION_TYPES[difficulty]
-    
-    candidates.remove(last_question_type)
-    
-    return random.choice(candidates)
-    
-    
+    pass
+
 
 def get_difficulty_label(difficulty: int) -> str:
     """
     Return the human-readable label for a difficulty int.
+
+    What to do:
+    - Return DIFFICULTY_LABELS.get(difficulty, "intermediate")
 
     Args:
         difficulty: Int 1–5
@@ -114,6 +120,4 @@ def get_difficulty_label(difficulty: int) -> str:
     Returns:
         str: Label like "beginner", "advanced", etc.
     """
-    
-    return DIFFICULTY_LABELS.get(difficulty, "intermediate")
     pass

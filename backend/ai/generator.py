@@ -5,6 +5,20 @@ from backend.ai.question_types import parse_question_response
 
 def generate_lesson(topic: str, language: str, difficulty: int) -> dict:
     """
+    Generate a lesson explanation and return it as a dict.
+
+    What to do:
+    - Call get_system_prompt(language) → system_prompt
+    - Call build_lesson_prompt(topic, language, difficulty) → user_prompt
+    - Call call_granite(system_prompt, user_prompt, max_tokens=400) → raw_text
+    - Return:
+        {
+            "lesson":     raw_text,
+            "topic":      topic,
+            "language":   language,
+            "difficulty": difficulty,
+        }
+
     Args:
         topic:      Subject to teach (e.g. "fractions")
         language:   Target language string (e.g. "Spanish")
@@ -16,19 +30,7 @@ def generate_lesson(topic: str, language: str, difficulty: int) -> dict:
     Raises:
         Exception: propagated from call_granite — caught by the Flask route handler
     """
-    
-    system_prompt = get_system_prompt(language)
-    
-    user_prompt = build_lesson_prompt(topics, language, difficulty)
-    
-    raw_test = call_granite(system_prompt, user_prompt)
-    
-    return {
-        "lesson": raw_test,
-        "topic": topic,
-        "language": language,
-        "difficulty": difficulty
-    }
+    pass
 
 
 def generate_challenge(
@@ -60,14 +62,7 @@ def generate_challenge(
     Returns:
         dict: Structured question — exact shape depends on question_type (see question_types.py)
     """
-    
-    sys_prompt = get_system_prompt(language)
-    user_prompt = build_challenge_prompt(topic, language, lesson_context, difficulty, question_type)
-    raw_text = call_granite(sys_prompt, user_prompt)
-    
-    return parse_question_response(raw_text, question_type)
-    
-    
+    pass
 
 
 def generate_feedback(
@@ -104,14 +99,4 @@ def generate_feedback(
     Returns:
         dict with keys: feedback, is_correct, language
     """
-    
-    sys_prompt = get_system_prompt(language)
-    user_prompt = build_feedback_prompt(user_answer, correct_answer, language, is_correct, topic)
-    raw_text = call_granite(sys_prompt, user_prompt)
-    
-    return {
-        "feedback": raw_text,
-        "is_correct": is_correct,
-        "language": language,
-    }
     pass

@@ -10,70 +10,106 @@ QUESTION_TYPES = {
 
 
 def get_question_type_instruction(question_type: str) -> str:
-    
-    q_type = QUESTION_TYPES.get(question_type, question_type)
-    
-    
-    instructions = {
-      "multiple_choice": (
-          "Write a multiple choice question with exactly 4 options labeled A, B, C, D. separate each option with newline."
-          "On a new line write: ANSWER (IN ENGLISH): followed by the correct letter only,  e.g. B"
-          "ONLY the label \"ANSWER\" MUST be in ENGLISH ALWAYS, the rest of the string follows the selected language"
-          
-      ),
-      "fill_blank": (
-          "Write one sentence with a key word or phrase replaced by ___. "
-          "On a new line write: ANSWER (IN ENGLISH): [the missing word or phrase]"
-          "ONLY the label \"ANSWER\" MUST be in ENGLISH ALWAYS, the rest of the string follows the selected language"
-          
-      ),
-      "true_false": (
-          "Write a factual True or False statement. "
-          "On a new line write: ANSWER (IN ENGLISH): [True or False] "
-          "On a new line write: JUSTIFICATION (IN ENGLISH): [one sentence explaining why]"
-          "ONLY the labels \"JUSTIFICATION\" and \"ANSWER\" MUST be in ENGLISH ALWAYS, the rest of the string follows the selected language"
-      ),
-      "short_answer": (
-          "Write an open-ended question requiring a 1–2 sentence response. "
-          "On a new line write: ANSWER (IN ENGLISH): [a model answer]"
-          "ONLY the label \"ANSWER\" MUST be in ENGLISH ALWAYS, the rest of the string follows the selected language"
-          
-      ),
-      "ordering": (
-          "List 4–5 steps or events in shuffled order, numbered 1 to 5. "
-          "On a new line write: ANSWER (IN ENGLISH): [correct order as comma-separated numbers, e.g. 3,1,4,2,5]"
-          "ONLY the label \"ANSWER\" MUST be in ENGLISH ALWAYS, the rest of the string follows the selected language"
-          
-      ),
-    }
+    """
+    Return the Granite format instruction for the given question type.
 
-    return instructions.get(question_type,
-    instructions["multiple_choice"])
+    What to do:
+    - Match question_type and return the exact instruction string for that type.
+      The instruction tells Granite the exact output format so parse_question_response()
+      can reliably split the response.
+
+    Format instructions to return (copy verbatim into your match/if block):
+
+        "multiple_choice":
+            "Write a multiple choice question with exactly 4 options labeled A, B, C, D.
+             On a new line write: ANSWER: [the correct letter only, e.g. B]"
+
+        "fill_blank":
+            "Write one sentence with a key word or phrase replaced by ___.
+             On a new line write: ANSWER: [the missing word or phrase]"
+
+        "true_false":
+            "Write a factual True or False statement.
+             On a new line write: ANSWER: [True or False]
+             On a new line write: JUSTIFICATION: [one sentence explaining why]"
+
+        "short_answer":
+            "Write an open-ended question requiring a 1–2 sentence response.
+             On a new line write: ANSWER: [a model answer — used for feedback context only]"
+
+        "ordering":
+            "List 4–5 steps or events from {topic} in shuffled order, numbered 1 to 5.
+             On a new line write: ANSWER: [the correct order as comma-separated numbers, e.g. 3,1,4,2,5]"
+
+    - If question_type is not recognized, return the "multiple_choice" instruction as default.
+
+    Args:
+        question_type: One of the keys in QUESTION_TYPES
+
+    Returns:
+        str: Format instruction to embed in the challenge prompt
+    """
+    pass
 
 
 def parse_question_response(raw_response: str, question_type: str) -> dict:
-    
-    raw_response = raw_response.strip()
-    
-    lines = raw_response.split('\n')
-    question = list()
-    
-    for line in lines:
-        if line.startswith("ANSWER"):
-            break
-        question.append(line)
-            
-    answer = next(l for l in lines if l.startswith("ANSWER:"))
-    correct_answer = answer.replace("ANSWER:","").strip()
-    justification = (next(l for l in lines if l.startswith("JUSTIFICATION:"))).replace("JUSTIFICATION:", "").strip()
-        
-    retDictVal = build_question_dict_val(question_type = question_type, question = question, correct_answer = correct_answer, justification= justification if justification else NULL )
-    
-    retDict = {QUESTION_TYPES.get(question_type): retDictVal}
-    
-    return retDict
-            
     """
+    Parse Granite's raw text into a structured question dict.
+
+    What to do:
+    - Strip leading/trailing whitespace from raw_response
+    - Split on newlines and scan for lines starting with "ANSWER:" (and "JUSTIFICATION:" for true_false)
+    - Everything before the ANSWER: line = the question body
+    - Everything after "ANSWER: " = the correct answer string
+
+    Return shape per type:
+
+        "multiple_choice":
+            {
+                "type":           "multiple_choice",
+                "question":       <full question text including A/B/C/D options>,
+                "correct_answer": <single letter e.g. "B">,
+                "options":        <list of 4 strings — parse lines starting with "A)", "B)", etc.>
+            }
+
+        "fill_blank":
+            {
+                "type":           "fill_blank",
+                "question":       <sentence containing ___>,
+                "correct_answer": <word or phrase>
+            }
+
+        "true_false":
+            {
+                "type":           "true_false",
+                "question":       <statement text>,
+                "correct_answer": <"True" or "False">,
+                "justification":  <explanation string from JUSTIFICATION: line>
+            }
+
+        "short_answer":
+            {
+                "type":           "short_answer",
+                "question":       <open-ended question>,
+                "correct_answer": <model answer — not used for exact matching, only for feedback>
+            }
+
+        "ordering":
+            {
+                "type":           "ordering",
+                "question":       <introductory text before the numbered list>,
+                "items":          <list of step strings in the shuffled order Granite provided>,
+                "correct_answer": <comma-separated order string e.g. "3,1,4,2,5">
+            }
+
+    Fallback — if parsing raises any exception or ANSWER: line is missing:
+        {
+            "type":           question_type,
+            "question":       raw_response,
+            "correct_answer": ""
+        }
+    Wrap the parsing logic in a try/except and return the fallback on any error.
+
     Args:
         raw_response:  Raw string returned by call_granite()
         question_type: The type that was requested
@@ -81,58 +117,4 @@ def parse_question_response(raw_response: str, question_type: str) -> dict:
     Returns:
         dict: Structured question data ready to send to the frontend
     """
-    
-
-
-def build_question_dict_val(type: str, question: list, correct_answer: str, justification: str = NULL) -> dict:
-    
-    questionHead = ""
-    answer = "\n".join(correct_answer)
-    
-    
-    retDict = {
-        "type": type,
-        "question": "\n".join(question),
-        "correct_answer": correct_answer
-    }
-   
-    if type == QUESTION_TYPES.get("multiple_choice"):
-        
-        
-        for line in question:
-            
-            if line.startswith("A)"):
-                mcIdx = question.index(line)
-                break
-            questionHead += line + "\n"
-            
-        options = question[mcIdx:]
-        
-        retDict("options") = options
-        
-    elif type == QUESTION_TYPES.get("ordering"):
-        
-        
-        for line in question:
-            
-            if line.startswith("A)"):
-                mcIdx = question.index(line)
-                break
-            questionHead += line + "\n"
-            
-        items = [l.strip() for l in question if l.strip() and l.strip()[0].isdigit()]
-        
-        retDict("items") = items
-        
-    elif type == QUESTION_TYPES.get("true_false"):
-        retDict("justification") = justification
-        
-    return retDict
-        
-    
-            
-        
-            
-        
-            
-    
+    pass
