@@ -4,13 +4,13 @@ export async function getlanguages() {
   return data;
 }
 
-export async function startSession(data) {
+export async function startSession(topic, language) {
   const response = await fetch("http://localhost:5000/session/start", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify({ topic, language }),
   });
   const sessionData = await response.json();
   return sessionData;
