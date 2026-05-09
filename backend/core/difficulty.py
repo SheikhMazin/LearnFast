@@ -28,6 +28,15 @@ def calculate_confidence_score(
     avg_time_seconds: float,
 ) -> float:
     
+    """
+    Args:
+        streak:             Current consecutive correct answer count
+        correctness_history: List of bools in chronological order (True = correct)
+        avg_time_seconds:   Average seconds the user takes per answer this session
+
+    Returns:
+        float: Confidence score 0.0–1.0
+    """
     
     recent = correctness_history[-5:]
     acc = sum(recent) / max(len(recent), 1)
@@ -39,15 +48,7 @@ def calculate_confidence_score(
     score = min(acc * time_factor + streak_bonus, 1.0)
     
     return score
-    """
-    Args:
-        streak:             Current consecutive correct answer count
-        correctness_history: List of bools in chronological order (True = correct)
-        avg_time_seconds:   Average seconds the user takes per answer this session
 
-    Returns:
-        float: Confidence score 0.0–1.0
-    """
     
 
 
@@ -68,6 +69,7 @@ def adjust_difficulty(current_difficulty: int, session_stats: dict) -> int:
     streak = session_stats["streak"]
     chist = session_stats["correctness_history"]
     avTimeS = session_stats["avg_time_seconds"]
+    confidence = calculate_confidence_score(streak, chist, avTimeS)
     
     if confidence >= 0.8 and streak >= 3:
         new_diff = min(current_difficulty + 1, DIFFICULTY_MAX)
@@ -75,9 +77,11 @@ def adjust_difficulty(current_difficulty: int, session_stats: dict) -> int:
         new_diff = max(current_difficulty - 1, DIFFICULTY_MIN)
     else:
         new_diff = current_difficulty
+        
+    return new_diff
 
 
-def select_question_type(difficulty: int, last_question_type: str = None) -> str:
+def select_question_type(difficulty: int, last_question_type: str = NULL) -> str:
     """
     Pick the next question type based on difficulty, avoiding immediate repeats.
 
