@@ -56,7 +56,7 @@ def call_granite(system_prompt: str, user_prompt: str, max_tokens: int = 500) ->
     Send a prompt pair to IBM Granite and return the generated text.
 
     What to do:
-    - Call get_client() to get the ModelInference instance
+    - Call get_pyclient() to get the ModelInference instance
     - Build the messages list in the chat format:
         messages = [
             {"role": "system", "content": system_prompt},
