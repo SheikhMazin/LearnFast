@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
+from core.session import create_session, update_session, reset_session, get_session_stats
 import os
 
 load_dotenv()
@@ -18,13 +19,11 @@ def home():
     return jsonify({"status": "LearnFast backend running"})
 
 
-@app.get("/languages")
-def languages():
-    return jsonify([
+LIST_OF_LANGUAGES = [
         "English", "Spanish", "French",
         "Mandarin", "Arabic", "Hindi",
         "Portuguese", "Swahili"
-    ])
+    ]
 
 
 @app.post("/session/start")
@@ -46,7 +45,39 @@ def session_start():
         201: Full session dict (see SessionResponse in schemas.py)
         400: {"error": "..."} with validation message
     """
-    pass
+    data = request.get_json()
+    list_of_languages = LIST_OF_LANGUAGES
+
+    language = data["language"]
+    topic = data["topic"]
+    difficulty_level = data.get("difficulty", 2)    # default to 2 if not sent
+
+    if not language or not topic:
+        return jsonify({"success": False, "message": "Language and/or topic fields missing"}), 400
+    
+    if language not in list_of_languages:
+        return jsonify({"success": False, "message": "Language not supported"}), 400
+
+    if language not in [1, 2, 3, 4, 5]:
+        return jsonify({"success": False, "message": "Difficulty type not supported"}), 400
+
+    session_dict = create_session(language, topic, difficulty_level) 
+    _sessions[session_dict["session_id"]] = session_dict
+
+    stats = get_session_stats(session_dict)
+
+    return jsonify({
+        "session_id":         session_dict["session_id"],
+        "language":           session_dict["language"],
+        "topic":              session_dict["topic"],
+        "questions_answered": stats["questions_answered"],
+        "total_correct":      stats["total_correct"],
+        "accuracy":           stats["accuracy"],
+        "current_streak":     stats["current_streak"],
+        "current_difficulty": stats["current_difficulty"],
+        "confidence_score":   stats["confidence_score"],
+        "avg_time_seconds":   stats["avg_time_seconds"],
+    }), 201
 
 
 @app.post("/lesson")
@@ -155,7 +186,27 @@ def session_stats(session_id: str):
         200: Stats dict (see SessionResponse in schemas.py)
         404: {"error": "Session not found"}
     """
-    pass
+    session = _sessions.get(session_id)
+    if not session:
+        return jsonify({"success": False, "message": "Session not found"}), 404
+    
+    stats = get_session_stats(session)
+
+    return jsonify({
+        "session_id":         session["session_id"],
+        "language":           session["language"],
+        "topic":              session["topic"],
+        "questions_answered": stats["questions_answered"],
+        "total_correct":      stats["total_correct"],
+        "accuracy":           stats["accuracy"],
+        "current_streak":     stats["current_streak"],
+        "current_difficulty": stats["current_difficulty"],
+        "confidence_score":   stats["confidence_score"],
+        "avg_time_seconds":   stats["avg_time_seconds"],
+    }), 200
+
+
+    
 
 
 @app.post("/session/<session_id>/reset")
@@ -172,7 +223,17 @@ def session_reset(session_id: str):
         200: Reset session dict
         404: {"error": "Session not found"}
     """
-    pass
+    session = _sessions.get(session_id)
+    if not session:
+        return jsonify({"success": False, "message": "Session not found"}), 404
+
+    session = reset_session(session)
+
+    _sessions[session_id] = session
+
+    return jsonify(session), 200
+
+
 
 
 if __name__ == "__main__":

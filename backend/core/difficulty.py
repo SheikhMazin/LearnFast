@@ -53,10 +53,25 @@ def calculate_confidence_score(
 
 
 def adjust_difficulty(current_difficulty: int, session_stats: dict) -> int:
-    
-    
     """
-        
+    Core adaptive algorithm — decide whether to raise, lower, or hold difficulty.
+
+    What to do:
+    - Extract from session_stats:
+        streak              = session_stats["streak"]
+        correctness_history = session_stats["correctness_history"]
+        avg_time_seconds    = session_stats["avg_time_seconds"]
+    - Call calculate_confidence_score(streak, correctness_history, avg_time_seconds)
+    - Apply rules in order:
+        1. IF confidence >= 0.8 AND streak >= 3:
+               new_difficulty = min(current_difficulty + 1, DIFFICULTY_MAX)
+        2. ELIF confidence <= 0.4 OR (len(correctness_history) >= 3 AND
+                                      not any(correctness_history[-3:])):
+               new_difficulty = max(current_difficulty - 1, DIFFICULTY_MIN)
+        3. ELSE:
+               new_difficulty = current_difficulty  (hold)
+    - Return new_difficulty
+
     Args:
         current_difficulty: Current level (1–5)
         session_stats:      Dict with keys: streak (int), correctness_history (list[bool]),
@@ -99,18 +114,15 @@ def select_question_type(difficulty: int, last_question_type: str = NULL) -> str
     Returns:
         str: A question type key (e.g. "fill_blank")
     """
-    
-    candidates = DIFFICULTY_QUESTION_TYPES[difficulty]
-    
-    candidates.remove(last_question_type)
-    
-    return random.choice(candidates)
-    
-    
+    pass
+
 
 def get_difficulty_label(difficulty: int) -> str:
     """
     Return the human-readable label for a difficulty int.
+
+    What to do:
+    - Return DIFFICULTY_LABELS.get(difficulty, "intermediate")
 
     Args:
         difficulty: Int 1–5
@@ -118,6 +130,4 @@ def get_difficulty_label(difficulty: int) -> str:
     Returns:
         str: Label like "beginner", "advanced", etc.
     """
-    
-    return DIFFICULTY_LABELS.get(difficulty, "intermediate")
     pass
