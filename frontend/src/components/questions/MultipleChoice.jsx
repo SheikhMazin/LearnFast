@@ -37,7 +37,7 @@ function MultipleChoice({ question, options, onSubmit }) {
       </div>
 
       <button
-        onClick={() => selected && onSubmit(selected)}
+        onClick={() => selected && onSubmit(LETTERS[options.indexOf(selected)])}
         disabled={!selected}
         className="w-full py-3 rounded-xl border border-gray-600 text-white font-medium hover:bg-white hover:text-black transition-all text-sm disabled:opacity-30 disabled:cursor-not-allowed"
       >
