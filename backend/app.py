@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
 from core.session import create_session, update_session, reset_session, get_session_stats
+from core.difficulty import select_question_type
+from ai.generator import generate_lesson, generate_challenge, generate_feedback
 import os
 
 load_dotenv()
@@ -84,7 +86,7 @@ def session_start():
     if language not in list_of_languages:
         return jsonify({"success": False, "message": "Language not supported"}), 400
 
-    if language not in [1, 2, 3, 4, 5]:
+    if difficulty_level not in [1, 2, 3, 4, 5]:
         return jsonify({"success": False, "message": "Difficulty type not supported"}), 400
 
     session_dict = create_session(language, topic, difficulty_level) 
@@ -125,7 +127,21 @@ def lesson():
         404: {"error": "Session not found"}
         500: {"error": "..."} on Granite/watsonx failure
     """
-    pass
+    data = request.get_json()
+    session_id = data.get("session_id")
+    session = _sessions.get(session_id)
+    if not session:
+        return jsonify({"error": "Session not found"}), 404
+
+    topic = data.get("topic", session["topic"])
+    language = data.get("language", session["language"])
+    difficulty = session["difficulty"]
+
+    try:
+        result = generate_lesson(topic, language, difficulty)
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.post("/challenge")
@@ -153,7 +169,25 @@ def challenge():
         404: {"error": "Session not found"}
         500: {"error": "..."} on Granite failure
     """
-    pass
+    
+    data = request.get_json()
+    seasion_id = data.get("session_id")
+    session = _sessions.get(seasion_id)
+    if not session:
+        return jsonify({"error": "Session not found"}), 404
+    
+    topic = data.get("topic", session["topic"])
+    language = data.get("language", session["language"])
+    difficulty = session["difficulty"]
+    lesson_context = data.get("lesson_context", "")
+    
+    try:
+        question_type = select_question_type(difficulty, session["last_question_type"])
+        result = generate_challenge(topic, language, lesson_context, difficulty, question_type)
+        
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.post("/answer")
@@ -195,7 +229,37 @@ def answer():
         404: {"error": "Session not found"}
         500: {"error": "..."} on Granite failure
     """
-    pass
+    data = request.get_json()
+    session_id = data.get("session_id")
+    session = _sessions.get(session_id)
+    if not session:
+        return jsonify({"error": "Session not found"}), 404
+
+    user_answer = data.get("user_answer", "")
+    correct_answer = data.get("correct_answer", "")
+    question_type = data.get("question_type", "")
+    time_taken_seconds = data.get("time_taken_seconds", 0.0)
+
+    if question_type == "short_answer":
+        is_correct = True
+    else:
+        is_correct = user_answer.strip().lower() == correct_answer.strip().lower()
+
+    update_session(session, is_correct, time_taken_seconds, question_type)
+
+    try:
+        feedback_dict = generate_feedback(user_answer, correct_answer, session["language"], is_correct, session["topic"])
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    stats = get_session_stats(session)
+
+    return jsonify({
+        "feedback":   feedback_dict["feedback"],
+        "is_correct": is_correct,
+        "language":   session["language"],
+        "session":    stats,
+    }), 200
 
 
 @app.get("/session/<session_id>/stats")

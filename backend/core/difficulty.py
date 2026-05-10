@@ -96,7 +96,7 @@ def adjust_difficulty(current_difficulty: int, session_stats: dict) -> int:
     return new_diff
 
 
-def select_question_type(difficulty: int, last_question_type: str = NULL) -> str:
+def select_question_type(difficulty: int, last_question_type: str = None) -> str:
     """
     Pick the next question type based on difficulty, avoiding immediate repeats.
 
@@ -114,7 +114,12 @@ def select_question_type(difficulty: int, last_question_type: str = NULL) -> str
     Returns:
         str: A question type key (e.g. "fill_blank")
     """
-    pass
+    
+    candidates = DIFFICULTY_QUESTION_TYPES[difficulty].copy()
+    
+    candidates.remove(last_question_type)
+    
+    return random.choice(candidates)
 
 
 def get_difficulty_label(difficulty: int) -> str:
@@ -130,4 +135,6 @@ def get_difficulty_label(difficulty: int) -> str:
     Returns:
         str: Label like "beginner", "advanced", etc.
     """
+    
+    return DIFFICULTY_LABELS.get(difficulty, "intermediate")
     pass
