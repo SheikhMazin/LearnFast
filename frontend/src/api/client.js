@@ -1,4 +1,4 @@
-const baseURL = "http://127.0.0.1:5000";
+const baseURL = "https://learnfast-1.onrender.com";
 
 export async function getLanguages() {
   const response = await fetch(`${baseURL}/languages`);
