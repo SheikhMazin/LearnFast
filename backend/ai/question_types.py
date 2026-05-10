@@ -100,35 +100,15 @@ def build_question_dict_val(type: str, question: list, correct_answer: str, just
         "correct_answer": correct_answer
     }
    
-    if type == QUESTION_TYPES.get("multiple_choice"):
-        
-        
-        for line in question:
-            
-            if line.startswith("A)"):
-                mcIdx = question.index(line)
-                break
-            questionHead += line + "\n"
-            
-        options = question[mcIdx:]
-        
+    if type == "multiple_choice":
+        options = [l for l in question if l.strip() and l.strip()[0] in "ABCD" and ")" in l]
         retDict["options"] = options
-        
-    elif type == QUESTION_TYPES.get("ordering"):
-        
-        
-        for line in question:
-            
-            if line.startswith("A)"):
-                mcIdx = question.index(line)
-                break
-            questionHead += line + "\n"
-            
+
+    elif type == "ordering":
         items = [l.strip() for l in question if l.strip() and l.strip()[0].isdigit()]
-        
         retDict["items"] = items
-        
-    elif type == QUESTION_TYPES.get("true_false"):
+
+    elif type == "true_false":
         retDict["justification"] = justification
         
     return retDict
