@@ -1,14 +1,23 @@
-import { useState } from "react";
-import Header from "./components/Header";
+import { useLanguage } from "./hooks/useLanguage";
+import { useSession } from "./hooks/useSession";
+import { getDirection } from "./utils/direction";
+import HomePage from "./pages/HomePage";
 
 function App() {
-  const [selectedLanguage, setSelectedLanguage] = useState("English");
+  const { selectedLanguage, changeLanguage } = useLanguage();
+  const { sessionId, difficulty, streak } = useSession();
+  const direction = getDirection(selectedLanguage);
 
   return (
-    <Header
-      selectedLanguage={selectedLanguage}
-      onChange={setSelectedLanguage}
-    />
+    <div dir={direction}>
+      <HomePage
+        selectedLanguage={selectedLanguage}
+        changeLanguage={changeLanguage}
+        streak={streak}
+        difficulty={difficulty}
+        sessionId={sessionId}
+      />
+    </div>
   );
 }
 
