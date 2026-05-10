@@ -5,7 +5,11 @@
       "Bash(curl *)",
       "Bash(python sanity_test.py)",
       "Bash(python app.py)",
-      "Bash(python *)"
+      "Bash(python *)",
+      "Bash(node --input-type=module --eval ' *)",
+      "Bash(npm run *)",
+      "Bash(npx vite *)",
+      "Bash(npm install *)"
     ]
   }
 }
