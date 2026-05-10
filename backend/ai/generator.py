@@ -22,11 +22,13 @@ def generate_curriculum(topic: str, language: str) -> list:
     Returns a list of dicts: [{id, concept, prerequisite, status}, ...]
     Falls back to a single-node curriculum if parsing fails.
     """
+    from ai.prompts import SUPPORTED_LANGUAGES
+    lang = SUPPORTED_LANGUAGES.get(language, language)
     system_prompt = (
-        "You are a curriculum designer. "
+        f"You are a curriculum designer writing in {lang}. "
         "Respond ONLY with a valid JSON array. No markdown, no explanation, no extra text."
     )
-    user_prompt = build_curriculum_prompt(topic)
+    user_prompt = build_curriculum_prompt(topic, language)
     raw = call_granite(system_prompt, user_prompt, max_tokens=600)
 
     nodes = _parse_json_list(raw)

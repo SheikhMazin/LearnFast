@@ -1,0 +1,122 @@
+{
+  "login": {
+    "subtitle": "سجّل الدخول لمواصلة التعلم",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "submit": "تسجيل الدخول",
+    "submitting": "جارٍ تسجيل الدخول...",
+    "error": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+    "noAccount": "ليس لديك حساب؟",
+    "signUp": "إنشاء حساب"
+  },
+  "signup": {
+    "subtitle": "أنشئ حسابك",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "submit": "إنشاء حساب",
+    "submitting": "جارٍ إنشاء الحساب...",
+    "error": "فشل التسجيل. قد يكون البريد الإلكتروني مستخدماً بالفعل.",
+    "hasAccount": "لديك حساب بالفعل؟",
+    "signIn": "تسجيل الدخول",
+    "emailRequired": "البريد الإلكتروني مطلوب",
+    "passwordRequired": "كلمة المرور مطلوبة",
+    "passwordLength": "يجب أن تحتوي كلمة المرور على 6 أحرف على الأقل",
+    "passwordMatch": "كلمتا المرور غير متطابقتين"
+  },
+  "home": {
+    "headline": "ماذا تريد أن تتعلم اليوم؟",
+    "subtext": "دروس مولّدة بالذكاء الاصطناعي بلغتك، تتكيف مع مستواك في الوقت الفعلي.",
+    "topicLabel": "الموضوع",
+    "topicPlaceholder": "مثال: التمثيل الضوئي، الحرب العالمية الثانية، الجبر الأساسي...",
+    "languageLabel": "اللغة",
+    "startButton": "ابدأ التعلم",
+    "topicError": "يرجى إدخال موضوع أولاً",
+    "logout": "تسجيل الخروج"
+  },
+  "sidebar": {
+    "pastCurriculums": "المناهج السابقة",
+    "noSessions": "لا توجد جلسات سابقة بعد.",
+    "startPrompt": "ابدأ بتعلم شيء ما!",
+    "sessions_one": "جلسة واحدة",
+    "sessions_other": "{{count}} جلسات"
+  },
+  "hud": {
+    "logout": "تسجيل الخروج",
+    "accuracy": "% دقة",
+    "difficulty": {
+      "1": "مبتدئ",
+      "2": "أساسي",
+      "3": "متوسط",
+      "4": "متقدم",
+      "5": "خبير"
+    }
+  },
+  "cards": {
+    "historyBanner": "تشاهد بطاقة سابقة — تقدم للأمام للمتابعة",
+    "loadingNext": "جارٍ تحميل البطاقة التالية...",
+    "loading": "جارٍ التحميل...",
+    "askQuestion": "هل أنت مرتبك؟ اطرح سؤالاً"
+  },
+  "loading": {
+    "building": "جارٍ بناء منهجك",
+    "buildingSubtext": "جارٍ إنشاء درس مخصص حول",
+    "resuming": "جارٍ استئناف جلستك",
+    "resumingSubtext": "جارٍ تحميل عملك السابق حول"
+  },
+  "curriculum": {
+    "title": "المنهج",
+    "progress": "{{done}} / {{total}} مكتمل"
+  },
+  "flashcard": {
+    "tapReveal": "اضغط للكشف",
+    "explanation": "الشرح",
+    "gotIt": "فهمت"
+  },
+  "lesson": {
+    "label": "الدرس",
+    "challenge": "مستعد للتحدي"
+  },
+  "question": {
+    "alreadyAnswered": "تم إرسال الإجابة — تقدم للأمام للمتابعة.",
+    "submitAnswer": "إرسال الإجابة",
+    "placeholder": "إجابتك...",
+    "textareaPlaceholder": "اكتب إجابتك هنا...",
+    "dragInstruction": "اسحب الخطوات إلى الترتيب الصحيح",
+    "submitOrder": "إرسال الترتيب"
+  },
+  "feedback": {
+    "correct": "صحيح!",
+    "incorrect": "ليس تماماً",
+    "yourAnswer": "إجابتك",
+    "correctAnswer": "الإجابة الصحيحة",
+    "aiFeedback": "ملاحظات الذكاء الاصطناعي",
+    "nextConcept": "المفهوم التالي",
+    "nextQuestion": "السؤال التالي",
+    "movingOn": "ننتقل إلى: {{concept}}",
+    "greatNext": "ممتاز — المفهوم التالي!",
+    "revisit": "لنراجع: {{concept}}",
+    "stepBack": "لنتراجع خطوة ونراجع الأساسيات.",
+    "curriculumDone": "لقد أكملت المنهج بأكمله!"
+  },
+  "qa": {
+    "header": "اطرح سؤالاً",
+    "about": "حول: {{topic}}",
+    "empty": "اسأل أي شيء عن هذا الموضوع.",
+    "you": "أنت",
+    "thinking": "جارٍ التفكير...",
+    "placeholder": "اسأل أي شيء...",
+    "send": "إرسال"
+  },
+  "completion": {
+    "title": "اكتمل المنهج!",
+    "subtitle": "أتقنت {{topic}} باللغة {{language}}",
+    "questions": "الأسئلة",
+    "accuracy": "الدقة",
+    "bestStreak": "أفضل سلسلة",
+    "finalLevel": "المستوى النهائي",
+    "avgTime": "متوسط الوقت",
+    "correct": "الصحيحة",
+    "newTopic": "ابدأ موضوعاً جديداً"
+  }
+}

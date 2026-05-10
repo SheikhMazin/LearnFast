@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { FlameIcon } from "../Icons";
 import MultipleChoice from "../questions/MultipleChoice";
 import FillBlank from "../questions/FillBlank";
@@ -6,9 +7,8 @@ import TrueFalse from "../questions/TrueFalse";
 import ShortAnswer from "../questions/ShortAnswer";
 import Ordering from "../questions/Ordering";
 
-const DIFF_LABEL = { 1: "Beginner", 2: "Elementary", 3: "Intermediate", 4: "Advanced", 5: "Expert" };
-
 function QuestionCard({ data, onAnswer, stats, isReadOnly }) {
+  const { t } = useTranslation();
   const { question, options, items, correct_answer, question_type } = data;
   const startTimeRef = useRef(Date.now());
 
@@ -21,7 +21,7 @@ function QuestionCard({ data, onAnswer, stats, isReadOnly }) {
     if (isReadOnly) {
       return (
         <p className="text-sm text-center py-8" style={{ color: "var(--ink-muted)" }}>
-          Answer already submitted — navigate forward to resume.
+          {t("question.alreadyAnswered")}
         </p>
       );
     }
@@ -41,6 +41,10 @@ function QuestionCard({ data, onAnswer, stats, isReadOnly }) {
     }
   };
 
+  const diffLabel = stats?.difficulty
+    ? t(`hud.difficulty.${stats.difficulty}`, { defaultValue: `Lvl ${stats.difficulty}` })
+    : null;
+
   return (
     <div className="p-6 flex flex-col gap-4">
       <div className="flex items-center justify-between">
@@ -56,7 +60,7 @@ function QuestionCard({ data, onAnswer, stats, isReadOnly }) {
           >
             {question_type?.replace(/_/g, " ")}
           </span>
-          {stats?.difficulty && (
+          {diffLabel && (
             <span
               className="px-2.5 py-0.5 text-xs"
               style={{
@@ -66,7 +70,7 @@ function QuestionCard({ data, onAnswer, stats, isReadOnly }) {
                 borderRadius: "3px 8px 6px 3px / 4px 3px 8px 4px",
               }}
             >
-              {DIFF_LABEL[stats.difficulty]}
+              {diffLabel}
             </span>
           )}
         </div>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { SUPPORTED_LANGUAGES } from "../constants/languages";
 import HistoryPanel from "../components/HistoryPanel";
 
@@ -8,11 +9,12 @@ const LANG_CODES = {
 };
 
 function HomePage({ selectedLanguage, changeLanguage, onStart, logout }) {
+  const { t } = useTranslation();
   const [topic, setTopic] = useState("");
   const [error, setError] = useState("");
 
   const handleStart = () => {
-    if (!topic.trim()) { setError("Please enter a topic first"); return; }
+    if (!topic.trim()) { setError(t("home.topicError")); return; }
     setError("");
     onStart(topic.trim());
   };
@@ -22,8 +24,7 @@ function HomePage({ selectedLanguage, changeLanguage, onStart, logout }) {
       <HistoryPanel onResume={onStart} />
 
       <div className="flex-1 flex flex-col min-w-0 min-h-0">
-        <header className="flex items-center justify-between px-6 py-4 flex-shrink-0" style={{ borderBottom: "1px solid var(--border)" }}>
-          <span className="font-title text-3xl" style={{ color: "var(--green-light)" }}>Vernā</span>
+        <header className="flex items-center justify-end px-6 py-4 flex-shrink-0" style={{ borderBottom: "1px solid var(--border)" }}>
           <button
             onClick={logout}
             className="text-sm transition-colors"
@@ -31,30 +32,28 @@ function HomePage({ selectedLanguage, changeLanguage, onStart, logout }) {
             onMouseEnter={(e) => e.target.style.color = "var(--text)"}
             onMouseLeave={(e) => e.target.style.color = "var(--text-muted)"}
           >
-            Logout
+            {t("home.logout")}
           </button>
         </header>
 
         <div className="flex-1 overflow-y-auto flex flex-col items-center justify-center px-6 text-center pb-12">
           <h1 className="font-title text-5xl mb-3 leading-tight" style={{ color: "var(--text)" }}>
-            What do you want
-            <br />
-            to learn today?
+            {t("home.headline")}
           </h1>
           <p className="text-base mb-10" style={{ color: "var(--text-muted)" }}>
-            AI-generated lessons in your language, adapting to your level in real time.
+            {t("home.subtext")}
           </p>
 
           <div className="w-full max-w-lg mb-6">
             <label className="block text-xs uppercase tracking-widest mb-2 text-left" style={{ color: "var(--text-muted)" }}>
-              Topic
+              {t("home.topicLabel")}
             </label>
             <input
               type="text"
               value={topic}
               onChange={(e) => { setTopic(e.target.value); setError(""); }}
               onKeyDown={(e) => e.key === "Enter" && handleStart()}
-              placeholder="e.g. Photosynthesis, World War II, Basic Algebra..."
+              placeholder={t("home.topicPlaceholder")}
               className="w-full px-4 py-3 text-sm rounded"
               style={{
                 background: "rgba(255,255,255,0.07)",
@@ -69,7 +68,7 @@ function HomePage({ selectedLanguage, changeLanguage, onStart, logout }) {
 
           <div className="w-full max-w-lg mb-8">
             <label className="block text-xs uppercase tracking-widest mb-3 text-left" style={{ color: "var(--text-muted)" }}>
-              Language
+              {t("home.languageLabel")}
             </label>
             <div className="grid grid-cols-4 gap-3">
               {SUPPORTED_LANGUAGES.map((lang) => {
@@ -101,7 +100,7 @@ function HomePage({ selectedLanguage, changeLanguage, onStart, logout }) {
             onClick={handleStart}
             className="btn-primary w-full max-w-lg py-3.5 text-base font-semibold"
           >
-            Start Learning
+            {t("home.startButton")}
           </button>
         </div>
       </div>

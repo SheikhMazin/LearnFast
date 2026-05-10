@@ -1,0 +1,122 @@
+{
+  "login": {
+    "subtitle": "Connectez-vous pour continuer à apprendre",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "submit": "Se connecter",
+    "submitting": "Connexion...",
+    "error": "E-mail ou mot de passe incorrect",
+    "noAccount": "Pas encore de compte ?",
+    "signUp": "S'inscrire"
+  },
+  "signup": {
+    "subtitle": "Créez votre compte",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "submit": "Créer un compte",
+    "submitting": "Création du compte...",
+    "error": "Échec de l'inscription. L'e-mail est peut-être déjà utilisé.",
+    "hasAccount": "Vous avez déjà un compte ?",
+    "signIn": "Se connecter",
+    "emailRequired": "L'e-mail est requis",
+    "passwordRequired": "Le mot de passe est requis",
+    "passwordLength": "Le mot de passe doit contenir au moins 6 caractères",
+    "passwordMatch": "Les mots de passe ne correspondent pas"
+  },
+  "home": {
+    "headline": "Que voulez-vous apprendre aujourd'hui ?",
+    "subtext": "Des leçons générées par IA dans votre langue, adaptées à votre niveau en temps réel.",
+    "topicLabel": "Sujet",
+    "topicPlaceholder": "Ex. Photosynthèse, Seconde Guerre mondiale, Algèbre de base...",
+    "languageLabel": "Langue",
+    "startButton": "Commencer à apprendre",
+    "topicError": "Veuillez d'abord entrer un sujet",
+    "logout": "Déconnexion"
+  },
+  "sidebar": {
+    "pastCurriculums": "Programmes passés",
+    "noSessions": "Aucune session précédente.",
+    "startPrompt": "Commencez à apprendre quelque chose !",
+    "sessions_one": "{{count}} session",
+    "sessions_other": "{{count}} sessions"
+  },
+  "hud": {
+    "logout": "Déconnexion",
+    "accuracy": "% préc",
+    "difficulty": {
+      "1": "Débutant",
+      "2": "Élémentaire",
+      "3": "Intermédiaire",
+      "4": "Avancé",
+      "5": "Expert"
+    }
+  },
+  "cards": {
+    "historyBanner": "Carte précédente — avancez pour reprendre",
+    "loadingNext": "Chargement de la prochaine carte...",
+    "loading": "Chargement...",
+    "askQuestion": "Perdu ? Posez une question"
+  },
+  "loading": {
+    "building": "Construction de votre programme",
+    "buildingSubtext": "Génération d'une leçon personnalisée sur",
+    "resuming": "Reprise de votre session",
+    "resumingSubtext": "Chargement de votre travail précédent sur"
+  },
+  "curriculum": {
+    "title": "Programme",
+    "progress": "{{done}} / {{total}} complété"
+  },
+  "flashcard": {
+    "tapReveal": "Touchez pour révéler",
+    "explanation": "Explication",
+    "gotIt": "Compris"
+  },
+  "lesson": {
+    "label": "Leçon",
+    "challenge": "Prêt pour un défi"
+  },
+  "question": {
+    "alreadyAnswered": "Réponse déjà soumise — avancez pour continuer.",
+    "submitAnswer": "Soumettre la réponse",
+    "placeholder": "Votre réponse...",
+    "textareaPlaceholder": "Écrivez votre réponse ici...",
+    "dragInstruction": "Faites glisser les étapes dans le bon ordre",
+    "submitOrder": "Soumettre l'ordre"
+  },
+  "feedback": {
+    "correct": "Correct !",
+    "incorrect": "Pas tout à fait",
+    "yourAnswer": "Votre réponse",
+    "correctAnswer": "Bonne réponse",
+    "aiFeedback": "Retour IA",
+    "nextConcept": "Concept suivant",
+    "nextQuestion": "Question suivante",
+    "movingOn": "On passe à : {{concept}}",
+    "greatNext": "Super — concept suivant !",
+    "revisit": "Revoyons : {{concept}}",
+    "stepBack": "Prenons un pas en arrière pour revoir les bases.",
+    "curriculumDone": "Vous avez terminé tout le programme !"
+  },
+  "qa": {
+    "header": "Posez une question",
+    "about": "Sur : {{topic}}",
+    "empty": "Posez n'importe quelle question sur ce sujet.",
+    "you": "Vous",
+    "thinking": "Réflexion...",
+    "placeholder": "Posez n'importe quelle question...",
+    "send": "Envoyer"
+  },
+  "completion": {
+    "title": "Programme terminé !",
+    "subtitle": "Vous avez maîtrisé {{topic}} en {{language}}",
+    "questions": "Questions",
+    "accuracy": "Précision",
+    "bestStreak": "Meilleure série",
+    "finalLevel": "Niveau final",
+    "avgTime": "Temps moyen",
+    "correct": "Correctes",
+    "newTopic": "Commencer un nouveau sujet"
+  }
+}

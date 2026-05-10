@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 function ShortAnswer({ question, onSubmit }) {
+  const { t } = useTranslation();
   const [value, setValue] = useState("");
 
   return (
@@ -10,7 +12,7 @@ function ShortAnswer({ question, onSubmit }) {
       <textarea
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        placeholder="Write your answer here..."
+        placeholder={t("question.textareaPlaceholder")}
         rows={4}
         className="paper-textarea w-full px-4 py-3 text-sm"
         autoFocus
@@ -21,7 +23,7 @@ function ShortAnswer({ question, onSubmit }) {
         disabled={!value.trim()}
         className="btn-primary w-full py-3 text-sm"
       >
-        Submit answer
+        {t("question.submitAnswer")}
       </button>
     </div>
   );

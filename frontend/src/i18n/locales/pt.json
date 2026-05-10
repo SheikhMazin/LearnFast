@@ -1,0 +1,122 @@
+{
+  "login": {
+    "subtitle": "Entre para continuar aprendendo",
+    "email": "E-mail",
+    "password": "Senha",
+    "submit": "Entrar",
+    "submitting": "Entrando...",
+    "error": "E-mail ou senha inválidos",
+    "noAccount": "Não tem uma conta?",
+    "signUp": "Cadastre-se"
+  },
+  "signup": {
+    "subtitle": "Crie sua conta",
+    "email": "E-mail",
+    "password": "Senha",
+    "confirmPassword": "Confirmar senha",
+    "submit": "Criar conta",
+    "submitting": "Criando conta...",
+    "error": "Falha no cadastro. O e-mail pode já estar em uso.",
+    "hasAccount": "Já tem uma conta?",
+    "signIn": "Entrar",
+    "emailRequired": "O e-mail é obrigatório",
+    "passwordRequired": "A senha é obrigatória",
+    "passwordLength": "A senha deve ter pelo menos 6 caracteres",
+    "passwordMatch": "As senhas não coincidem"
+  },
+  "home": {
+    "headline": "O que você quer aprender hoje?",
+    "subtext": "Aulas geradas por IA no seu idioma, adaptando-se ao seu nível em tempo real.",
+    "topicLabel": "Tópico",
+    "topicPlaceholder": "Ex.: Fotossíntese, Segunda Guerra Mundial, Álgebra Básica...",
+    "languageLabel": "Idioma",
+    "startButton": "Começar a aprender",
+    "topicError": "Por favor, insira um tópico primeiro",
+    "logout": "Sair"
+  },
+  "sidebar": {
+    "pastCurriculums": "Currículos anteriores",
+    "noSessions": "Ainda sem sessões anteriores.",
+    "startPrompt": "Comece a aprender algo!",
+    "sessions_one": "{{count}} sessão",
+    "sessions_other": "{{count}} sessões"
+  },
+  "hud": {
+    "logout": "Sair",
+    "accuracy": "% prec",
+    "difficulty": {
+      "1": "Iniciante",
+      "2": "Elementar",
+      "3": "Intermediário",
+      "4": "Avançado",
+      "5": "Especialista"
+    }
+  },
+  "cards": {
+    "historyBanner": "Visualizando cartão anterior — avance para continuar",
+    "loadingNext": "Carregando próximo cartão...",
+    "loading": "Carregando...",
+    "askQuestion": "Com dúvidas? Faça uma pergunta"
+  },
+  "loading": {
+    "building": "Construindo seu currículo",
+    "buildingSubtext": "Gerando uma aula personalizada sobre",
+    "resuming": "Retomando sua sessão",
+    "resumingSubtext": "Carregando seu trabalho anterior sobre"
+  },
+  "curriculum": {
+    "title": "Currículo",
+    "progress": "{{done}} / {{total}} concluído"
+  },
+  "flashcard": {
+    "tapReveal": "Toque para revelar",
+    "explanation": "Explicação",
+    "gotIt": "Entendi"
+  },
+  "lesson": {
+    "label": "Lição",
+    "challenge": "Pronto para um desafio"
+  },
+  "question": {
+    "alreadyAnswered": "Resposta já enviada — avance para continuar.",
+    "submitAnswer": "Enviar resposta",
+    "placeholder": "Sua resposta...",
+    "textareaPlaceholder": "Escreva sua resposta aqui...",
+    "dragInstruction": "Arraste os passos para a ordem correta",
+    "submitOrder": "Enviar ordem"
+  },
+  "feedback": {
+    "correct": "Correto!",
+    "incorrect": "Não exatamente",
+    "yourAnswer": "Sua resposta",
+    "correctAnswer": "Resposta correta",
+    "aiFeedback": "Feedback da IA",
+    "nextConcept": "Próximo conceito",
+    "nextQuestion": "Próxima pergunta",
+    "movingOn": "Avançando para: {{concept}}",
+    "greatNext": "Ótimo — próximo conceito!",
+    "revisit": "Vamos revisitar: {{concept}}",
+    "stepBack": "Vamos dar um passo atrás e revisar a base.",
+    "curriculumDone": "Você completou todo o currículo!"
+  },
+  "qa": {
+    "header": "Faça uma pergunta",
+    "about": "Sobre: {{topic}}",
+    "empty": "Pergunte qualquer coisa sobre este tópico.",
+    "you": "Você",
+    "thinking": "Pensando...",
+    "placeholder": "Pergunte qualquer coisa...",
+    "send": "Enviar"
+  },
+  "completion": {
+    "title": "Currículo concluído!",
+    "subtitle": "Você dominou {{topic}} em {{language}}",
+    "questions": "Perguntas",
+    "accuracy": "Precisão",
+    "bestStreak": "Melhor sequência",
+    "finalLevel": "Nível final",
+    "avgTime": "Tempo médio",
+    "correct": "Corretas",
+    "newTopic": "Começar um novo tópico"
+  }
+}

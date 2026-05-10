@@ -1,15 +1,18 @@
+import { useTranslation } from "react-i18next";
 import { FlameIcon, BoltIcon } from "../Icons";
 
-const DIFF_LABEL = { 1: "Beginner", 2: "Elementary", 3: "Intermediate", 4: "Advanced", 5: "Expert" };
-
 function LessonCard({ data, onReady, stats, isReadOnly }) {
+  const { t } = useTranslation();
   const { lesson, concept, difficulty } = data;
+  const diffLabel = difficulty
+    ? t(`hud.difficulty.${difficulty}`, { defaultValue: `Lvl ${difficulty}` })
+    : null;
 
   return (
     <div className="p-6 flex flex-col gap-5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs uppercase tracking-widest" style={{ color: "var(--ink-muted)" }}>Lesson</span>
+          <span className="text-xs uppercase tracking-widest" style={{ color: "var(--ink-muted)" }}>{t("lesson.label")}</span>
           {concept && (
             <span
               className="px-2.5 py-0.5 text-xs font-medium"
@@ -23,7 +26,7 @@ function LessonCard({ data, onReady, stats, isReadOnly }) {
               {concept}
             </span>
           )}
-          {difficulty && (
+          {diffLabel && (
             <span
               className="px-2.5 py-0.5 text-xs"
               style={{
@@ -33,7 +36,7 @@ function LessonCard({ data, onReady, stats, isReadOnly }) {
                 borderRadius: "3px 8px 6px 3px / 4px 3px 8px 4px",
               }}
             >
-              {DIFF_LABEL[difficulty] || `Lvl ${difficulty}`}
+              {diffLabel}
             </span>
           )}
         </div>
@@ -50,7 +53,7 @@ function LessonCard({ data, onReady, stats, isReadOnly }) {
       {!isReadOnly && (
         <button onClick={onReady} className="btn-outline mt-auto w-full py-3 text-sm flex items-center justify-center gap-2">
           <BoltIcon className="w-3.5 h-3.5" />
-          Ready for a challenge
+          {t("lesson.challenge")}
         </button>
       )}
     </div>

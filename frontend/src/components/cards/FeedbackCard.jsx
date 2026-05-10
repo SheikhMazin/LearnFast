@@ -1,23 +1,25 @@
+import { useTranslation } from "react-i18next";
 import { CheckIcon, XIcon, BoltIcon } from "../Icons";
 
 function FeedbackCard({ data, onNext, isReadOnly }) {
+  const { t } = useTranslation();
   const { isCorrect, feedback, userAnswer, correctAnswer, nextAction, nodeContext } = data;
 
   const transitionMsg = () => {
     if (nextAction === "advance") {
       const next = nodeContext?.concept || nodeContext?.next_concept;
       return next
-        ? { text: `Moving on to: ${next}`, color: "var(--success)" }
-        : { text: "Great — next concept!", color: "var(--success)" };
+        ? { text: t("feedback.movingOn", { concept: next }), color: "var(--success)" }
+        : { text: t("feedback.greatNext"), color: "var(--success)" };
     }
     if (nextAction === "rollback") {
       const to = nodeContext?.rollback_to;
       return to
-        ? { text: `Let's revisit: ${to}`, color: "var(--warning)" }
-        : { text: "Let's step back and revisit the foundation.", color: "var(--warning)" };
+        ? { text: t("feedback.revisit", { concept: to }), color: "var(--warning)" }
+        : { text: t("feedback.stepBack"), color: "var(--warning)" };
     }
     if (nextAction === "curriculum_complete") {
-      return { text: "You've completed the entire curriculum!", color: "var(--success)" };
+      return { text: t("feedback.curriculumDone"), color: "var(--success)" };
     }
     return null;
   };
@@ -26,7 +28,6 @@ function FeedbackCard({ data, onNext, isReadOnly }) {
 
   return (
     <div className="p-6 flex flex-col gap-4">
-      {/* Result */}
       <div className="flex flex-col items-center py-3 gap-2">
         <div
           className="w-14 h-14 rounded-full flex items-center justify-center border-2"
@@ -42,11 +43,10 @@ function FeedbackCard({ data, onNext, isReadOnly }) {
           className="text-xl font-bold font-title"
           style={{ color: isCorrect ? "var(--success)" : "var(--error)" }}
         >
-          {isCorrect ? "Correct!" : "Not quite"}
+          {isCorrect ? t("feedback.correct") : t("feedback.incorrect")}
         </h3>
       </div>
 
-      {/* Answer block */}
       <div
         className="px-4 py-3 space-y-2"
         style={{
@@ -56,23 +56,19 @@ function FeedbackCard({ data, onNext, isReadOnly }) {
         }}
       >
         <div>
-          <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--ink-muted)" }}>Your answer</p>
-          <p
-            className="text-sm font-medium"
-            style={{ color: isCorrect ? "var(--success)" : "var(--error)" }}
-          >
+          <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--ink-muted)" }}>{t("feedback.yourAnswer")}</p>
+          <p className="text-sm font-medium" style={{ color: isCorrect ? "var(--success)" : "var(--error)" }}>
             {userAnswer}
           </p>
         </div>
         {!isCorrect && correctAnswer && (
           <div>
-            <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--ink-muted)" }}>Correct answer</p>
+            <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--ink-muted)" }}>{t("feedback.correctAnswer")}</p>
             <p className="text-sm font-medium" style={{ color: "var(--success)" }}>{correctAnswer}</p>
           </div>
         )}
       </div>
 
-      {/* AI feedback */}
       <div
         className="px-4 py-3"
         style={{
@@ -83,20 +79,18 @@ function FeedbackCard({ data, onNext, isReadOnly }) {
       >
         <p className="text-xs uppercase tracking-widest mb-1 flex items-center gap-1" style={{ color: "var(--green)" }}>
           <BoltIcon className="w-3 h-3" />
-          AI Feedback
+          {t("feedback.aiFeedback")}
         </p>
         <p className="text-sm leading-relaxed" style={{ color: "var(--ink)" }}>{feedback}</p>
       </div>
 
-      {/* Transition message */}
       {msg && (
         <p className="text-xs font-medium text-center" style={{ color: msg.color }}>{msg.text}</p>
       )}
 
-      {/* CTA */}
       {!isReadOnly && nextAction !== "curriculum_complete" && (
         <button onClick={onNext} className="btn-outline w-full py-3 text-sm">
-          {nextAction === "advance" ? "Next concept" : "Next question"}
+          {nextAction === "advance" ? t("feedback.nextConcept") : t("feedback.nextQuestion")}
         </button>
       )}
     </div>

@@ -1,26 +1,25 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 function FillBlank({ question, onSubmit }) {
-  const parts = (question || "").split("___");
+  const { t } = useTranslation();
+  const rawParts = (question || "").split("___");
+  // Enforce exactly one blank: merge any trailing segments so there's only 1 input
+  const parts = rawParts.length > 2
+    ? [rawParts[0], rawParts.slice(1).join("")]
+    : rawParts;
   const blankCount = parts.length - 1;
   const hasBlank = blankCount > 0;
 
-  // One value per blank — fixes all blanks sharing a single state
-  const [values, setValues] = useState(() => Array(Math.max(blankCount, 1)).fill(""));
+  const [values, setValues] = useState([""]);
 
-  const updateValue = (idx, val) => {
-    setValues((prev) => {
-      const next = [...prev];
-      next[idx] = val;
-      return next;
-    });
-  };
+  const updateValue = (val) => setValues([val]);
 
-  const allFilled = values.every((v) => v.trim());
+  const allFilled = values[0].trim() !== "";
 
   const handleSubmit = () => {
     if (!allFilled) return;
-    onSubmit(values.map((v) => v.trim()).join(", "));
+    onSubmit(values[0].trim());
   };
 
   if (!hasBlank) {
@@ -30,9 +29,9 @@ function FillBlank({ question, onSubmit }) {
         <input
           type="text"
           value={values[0]}
-          onChange={(e) => updateValue(0, e.target.value)}
+          onChange={(e) => updateValue(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && values[0].trim() && onSubmit(values[0].trim())}
-          placeholder="Your answer..."
+          placeholder={t("question.placeholder")}
           className="w-full px-3 py-2.5 rounded text-sm"
           style={{
             background: "rgba(255,255,255,0.6)",
@@ -47,7 +46,7 @@ function FillBlank({ question, onSubmit }) {
           disabled={!values[0].trim()}
           className="btn-primary w-full py-3 text-sm"
         >
-          Submit answer
+          {t("question.submitAnswer")}
         </button>
       </div>
     );
@@ -66,7 +65,7 @@ function FillBlank({ question, onSubmit }) {
               <input
                 type="text"
                 value={values[i]}
-                onChange={(e) => updateValue(i, e.target.value)}
+                onChange={(e) => updateValue(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && allFilled && handleSubmit()}
                 placeholder="___"
                 className="ink-input inline-block mx-1 text-base text-center px-1 min-w-16"
