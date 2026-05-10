@@ -115,10 +115,11 @@ def select_question_type(difficulty: int, last_question_type: str = None) -> str
         str: A question type key (e.g. "fill_blank")
     """
     
-    candidates = DIFFICULTY_QUESTION_TYPES[difficulty].copy()
-    
-    candidates.remove(last_question_type)
-    
+    candidates = DIFFICULTY_QUESTION_TYPES.get(difficulty, ["multiple_choice"]).copy()
+
+    if last_question_type in candidates and len(candidates) > 1:
+        candidates.remove(last_question_type)
+
     return random.choice(candidates)
 
 

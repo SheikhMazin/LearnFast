@@ -63,11 +63,15 @@ def parse_question_response(raw_response: str, question_type: str) -> dict:
             break
         question.append(line)
             
-    answer = next(l for l in lines if l.startswith("ANSWER:"))
-    correct_answer = answer.replace("ANSWER:","").strip()
-    justification = (next(l for l in lines if l.startswith("JUSTIFICATION:"))).replace("JUSTIFICATION:", "").strip()
-        
-    retDictVal = build_question_dict_val(question_type = question_type, question = question, correct_answer = correct_answer, justification= justification if justification else None)
+    answer_line = next((l for l in lines if l.upper().startswith("ANSWER")), None)
+    correct_answer = answer_line.split(":", 1)[-1].strip() if answer_line else ""
+
+    justification = None
+    if question_type == "true_false":
+        just_line = next((l for l in lines if l.upper().startswith("JUSTIFICATION")), None)
+        justification = just_line.split(":", 1)[-1].strip() if just_line else None
+
+    retDictVal = build_question_dict_val(type=question_type, question=question, correct_answer=correct_answer, justification=justification)
     
     retDict = {QUESTION_TYPES.get(question_type): retDictVal}
     
@@ -108,7 +112,7 @@ def build_question_dict_val(type: str, question: list, correct_answer: str, just
             
         options = question[mcIdx:]
         
-        retDict("options") = options
+        retDict["options"] = options
         
     elif type == QUESTION_TYPES.get("ordering"):
         
@@ -122,10 +126,10 @@ def build_question_dict_val(type: str, question: list, correct_answer: str, just
             
         items = [l.strip() for l in question if l.strip() and l.strip()[0].isdigit()]
         
-        retDict("items") = items
+        retDict["items"] = items
         
     elif type == QUESTION_TYPES.get("true_false"):
-        retDict("justification") = justification
+        retDict["justification"] = justification
         
     return retDict
         

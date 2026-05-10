@@ -55,7 +55,7 @@ def build_challenge_prompt(
     difficulty: int,
     question_type: str,
 ) -> str:
-    from backend.ai.question_types import get_question_type_instruction
+    from ai.question_types import get_question_type_instruction
     
     
     difficulty = DIFFICULTY_LABELS.get(difficulty, DIFFICULTY_LABELS.get(3))
