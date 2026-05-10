@@ -46,8 +46,7 @@ function LoginPage({ onLogin, onGoToSignUp }) {
               type="email"
               value={email}
               onChange={(e) => { setEmail(e.target.value); setErrors(p => ({ ...p, email: "" })); }}
-              className={`w-full text-sm px-3 py-2 rounded-lg border bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 ${errors.email ? "border-red-300" : "border-gray-200"}`}
-            />
+              className={`w-full text-sm px-3 py-2 rounded-lg border bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 text-gray-900 ...`}            />
             {errors.email && <p className="text-xs text-red-400 mt-1">{errors.email}</p>}
           </div>
 
@@ -57,8 +56,7 @@ function LoginPage({ onLogin, onGoToSignUp }) {
               type="password"
               value={password}
               onChange={(e) => { setPassword(e.target.value); setErrors(p => ({ ...p, password: "" })); }}
-              className={`w-full text-sm px-3 py-2 rounded-lg border bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 ${errors.password ? "border-red-300" : "border-gray-200"}`}
-            />
+              className={`w-full text-sm px-3 py-2 rounded-lg border bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 text-gray-900 ...`}            />
             {errors.password && <p className="text-xs text-red-400 mt-1">{errors.password}</p>}
           </div>
 
