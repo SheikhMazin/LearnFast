@@ -3,7 +3,7 @@ import { startSession } from "../api/client";
 
 export function useSession() {
   const [sessionId, setSessionId] = useState(null);
-  const [difficulty, setDifficulty] = useState("beginner");
+  const [difficulty, setDifficulty] = useState("Beginner");
   const [streak, setStreak] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -14,7 +14,7 @@ export function useSession() {
     try {
       const data = await startSession(topic, language);
       setSessionId(data.session_id);
-      setDifficulty(data.difficulty || "beginner");
+      setDifficulty(data.difficulty || "Beginner");
       setStreak(0);
     } catch (err) {
       setError("Failed to start session.");

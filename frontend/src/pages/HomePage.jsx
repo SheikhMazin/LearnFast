@@ -1,21 +1,28 @@
 import { SUPPORTED_LANGUAGES } from "../constants/languages";
+import Header from "../components/Header";
 
-function HomePage({ selectedLanguage, changeLanguage, streak, difficulty, sessionId }) {
+function HomePage({
+  selectedLanguage,
+  changeLanguage,
+  streak,
+  difficulty,
+  sessionId,
+}) {
   return (
     <div className="min-h-screen bg-gray-50">
-
+      <Header selectedLanguage={selectedLanguage} onChange={changeLanguage} />
       {/* Hero */}
       <div className="max-w-xl mx-auto px-6 pt-12 pb-6 text-center">
         <h1 className="text-3xl font-medium text-gray-900 mb-3">
           Learn anything, in any language
         </h1>
         <p className="text-gray-500 text-base">
-          Pick a topic, choose your language, and start learning with AI-powered lessons.
+          Pick a topic, choose your language, and start learning with AI-powered
+          lessons.
         </p>
       </div>
 
       <div className="max-w-xl mx-auto px-6 space-y-4">
-
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3">
           <div className="bg-white rounded-xl border border-gray-100 p-4 text-center">
@@ -23,18 +30,24 @@ function HomePage({ selectedLanguage, changeLanguage, streak, difficulty, sessio
             <p className="text-xs text-gray-400 mt-1">Streak</p>
           </div>
           <div className="bg-white rounded-xl border border-gray-100 p-4 text-center">
-            <p className="text-2xl font-medium text-gray-900">{difficulty ?? "—"}</p>
+            <p className="text-2xl font-medium text-gray-900">
+              {difficulty ?? "—"}
+            </p>
             <p className="text-xs text-gray-400 mt-1">Difficulty</p>
           </div>
           <div className="bg-white rounded-xl border border-gray-100 p-4 text-center">
-            <p className="text-2xl font-medium text-gray-900">{sessionId ?? "—"}</p>
+            <p className="text-2xl font-medium text-gray-900">
+              {sessionId ?? "—"}
+            </p>
             <p className="text-xs text-gray-400 mt-1">Session</p>
           </div>
         </div>
 
         {/* Topic input */}
         <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <p className="text-xs text-gray-400 mb-3">What do you want to learn?</p>
+          <p className="text-xs text-gray-400 mb-3">
+            What do you want to learn?
+          </p>
           <div className="flex gap-2">
             <input
               type="text"
@@ -66,7 +79,6 @@ function HomePage({ selectedLanguage, changeLanguage, streak, difficulty, sessio
             ))}
           </div>
         </div>
-
       </div>
     </div>
   );
