@@ -21,7 +21,9 @@ def get_question_type_instruction(question_type: str) -> str:
             "ONLY the label 'ANSWER' must be in English."
         ),
         "true_false": (
-            "Write a factual True or False statement. "
+            "Write a single factual statement that is either True or False. "
+            "Write the statement ALONE on the first line — do NOT prefix it with 'True or False:' or any label. "
+            "Example: 'Mitochondria produce ATP through cellular respiration.' "
             "On a new line write: ANSWER (IN ENGLISH): True  or  ANSWER (IN ENGLISH): False. "
             "On a new line write: JUSTIFICATION (IN ENGLISH): [one sentence explaining why]. "
             "ONLY the labels 'ANSWER' and 'JUSTIFICATION' must be in English."
@@ -130,6 +132,24 @@ def parse_question_response(raw_response: str, question_type: str) -> dict:
 
     pre_answer = lines[:answer_idx]
     question_text, extras = _extract_question_content(pre_answer, question_type)
+
+    # Fallback for true_false: if stripping removed everything, rescue text from
+    # preamble lines by taking content after the last colon, or the line itself.
+    if question_type == "true_false" and not question_text:
+        for line in pre_answer:
+            stripped = line.strip()
+            if not stripped:
+                continue
+            if stripped.upper().startswith(("ANSWER", "JUSTIFICATION")):
+                continue
+            if ":" in stripped:
+                after = stripped.split(":", 1)[-1].strip()
+                if after:
+                    question_text = after
+                    break
+            else:
+                question_text = stripped
+                break
 
     val = {
         "type":           question_type,

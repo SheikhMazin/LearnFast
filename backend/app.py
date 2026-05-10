@@ -456,6 +456,35 @@ def ask():
         return jsonify({"error": str(e)}), 500
 
 
+@app.get("/session/<session_id>")
+def get_session(session_id: str):
+    user = get_current_user()
+    if not user:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    session = _sessions.get(session_id) or load_session(session_id)
+    if not session:
+        return jsonify({"error": "Session not found"}), 404
+
+    # Cache in memory so lesson/challenge routes can find it immediately
+    _sessions[session_id] = session
+
+    stats = get_session_stats(session)
+
+    return jsonify({
+        "session_id":         session_id,
+        "language":           session["language"],
+        "topic":              session["topic"],
+        "current_difficulty": stats["current_difficulty"],
+        "current_node":       session.get("current_node", 0),
+        "curriculum":         session.get("curriculum", []),
+        "questions_answered": stats["questions_answered"],
+        "total_correct":      stats["total_correct"],
+        "accuracy":           stats["accuracy"],
+        "current_streak":     stats["current_streak"],
+    }), 200
+
+
 @app.get("/sessions")
 def list_sessions():
     user = get_current_user()

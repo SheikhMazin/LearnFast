@@ -107,7 +107,7 @@ function HistoryPanel({ onResume, onHome }) {
             {!loading && sessions.map((s) => (
               <button
                 key={s.session_id}
-                onClick={() => onResume?.(s.topic, s.language, true)}
+                onClick={() => onResume?.(s.topic, s.language, true, s.session_id)}
                 className="w-full text-left px-3 py-2.5 transition-all"
                 style={{
                   background: "transparent",

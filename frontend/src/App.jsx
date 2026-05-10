@@ -27,18 +27,20 @@ function App() {
     i18n.changeLanguage(LANG_TO_I18N[selectedLanguage.name] || 'en');
   }, [selectedLanguage]);
 
-  const handleStart = async (topic, languageOverride = null, isResume = false) => {
+  const handleStart = async (topic, languageOverride = null, isResume = false, sessionId = null) => {
     setPendingTopic(topic);
     setIsResumingSession(isResume);
     setPage("loading");
     const lang = languageOverride || selectedLanguage.name;
     try {
-      const data = await api.startSession(topic, lang, 2);
+      const data = isResume && sessionId
+        ? await api.resumeSession(sessionId)
+        : await api.startSession(topic, lang, 2);
       if (data.session_id) {
         setSession({
           sessionId: data.session_id,
-          topic,
-          language: lang,
+          topic: data.topic || topic,
+          language: data.language || lang,
           curriculum: data.curriculum || [],
           currentNode: data.current_node || 0,
           difficulty: data.current_difficulty || 2,
