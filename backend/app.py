@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from core.session import create_session, update_session, reset_session, get_session_stats
 from core.difficulty import select_question_type
 from ai.generator import generate_lesson, generate_challenge, generate_feedback
-import os
+from db import *
 
 load_dotenv()
 
@@ -16,16 +16,22 @@ CORS(app)
 _sessions: dict = {}
 
 
-@app.route("/")
-def home():
-    return jsonify({"status": "LearnFast backend running"})
-
 
 LIST_OF_LANGUAGES = [
         "English", "Spanish", "French",
         "Mandarin", "Arabic", "Hindi",
         "Portuguese", "Swahili"
-    ]
+        ]
+
+@app.route("/")
+def home():
+    return jsonify({"status": "LearnFast backend running"})
+
+
+@app.get("/languages")
+def languages():
+    return jsonify(LIST_OF_LANGUAGES), 200
+
 
 def get_current_user():
     """
@@ -51,8 +57,13 @@ def get_current_user():
     Raises:
         Nothing — all failure cases return None
     """
-    pass
+    
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return None
 
+    token = auth_header.split(" ")[1]
+    return get_user(token)
 
 @app.post("/session/start")
 def session_start():
@@ -73,12 +84,19 @@ def session_start():
         201: Full session dict (see SessionResponse in schemas.py)
         400: {"error": "..."} with validation message
     """
+    user = get_current_user()
+
+    if not user:
+        return jsonify({"success": False, "message": "Unauthorized"}), 401
+
+    user_id = user.user.id
+
     data = request.get_json()
     list_of_languages = LIST_OF_LANGUAGES
 
-    language = data["language"]
-    topic = data["topic"]
-    difficulty_level = data.get("difficulty", 2)    # default to 2 if not sent
+    language = data.get("language")
+    topic = data.get("topic")
+    difficulty_level = data.get("difficulty", 3)    # default to 2 if not sent
 
     if not language or not topic:
         return jsonify({"success": False, "message": "Language and/or topic fields missing"}), 400
@@ -91,6 +109,7 @@ def session_start():
 
     session_dict = create_session(language, topic, difficulty_level) 
     _sessions[session_dict["session_id"]] = session_dict
+    save_session(session_dict, user_id)
 
     stats = get_session_stats(session_dict)
 
@@ -276,7 +295,11 @@ def session_stats(session_id: str):
         200: Stats dict (see SessionResponse in schemas.py)
         404: {"error": "Session not found"}
     """
-    session = _sessions.get(session_id)
+    user = get_current_user()
+    if not user:
+        return jsonify({"success": False, "message": "Unauthorized"}), 401
+
+    session = _sessions.get(session_id) or load_session(session_id)
     if not session:
         return jsonify({"success": False, "message": "Session not found"}), 404
     
@@ -313,15 +336,70 @@ def session_reset(session_id: str):
         200: Reset session dict
         404: {"error": "Session not found"}
     """
-    session = _sessions.get(session_id)
+    user = get_current_user()
+    if not user:
+        return jsonify({"success": False, "message": "Unauthorized"}), 401
+
+    user_id = user.user.id
+    session = _sessions.get(session_id) or load_session(session_id)
+
     if not session:
         return jsonify({"success": False, "message": "Session not found"}), 404
 
     session = reset_session(session)
 
     _sessions[session_id] = session
+    
+    save_session(session, user_id)
 
     return jsonify(session), 200
+
+
+@app.post("/auth/signup")
+def signup():
+    """
+    Register a new user account.
+
+    Reads email and password from the request body, validates they are
+    present, then calls sign_up() from db.py which passes it to Supabase.
+    Supabase handles all password hashing and storage internally.
+    Wrap in try/except — if signup fails (email already exists, password
+    too short) catch the exception and return 400 with the error message.
+
+    Note: By default Supabase sends a confirmation email before the
+    account is active. Disable this in Supabase dashboard under
+    Authentication → Settings → Disable email confirmations for the
+    hackathon demo.
+
+    Request body:
+        {
+            "email": "user@example.com",
+            "password": "minimum6chars"
+        }
+
+    Returns:
+        201: { "message": "Signup successful" }
+        400: { "error": "Email and password required" } if fields missing
+        400: { "error": "..." } if Supabase signup fails
+    """
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"success": False, "message": "Email and/or Password fields are missing"}), 400
+
+    email = data.get("email")
+    password = data.get("password")
+
+    try:
+        sign_up(email, password)
+    except Exception:
+        return jsonify({"success": False, "message": "Email and/or password already exist"}), 400
+    
+    return jsonify({"success": True, "message": "Signup successful"}), 201
+        
+        
+
+
 
 
 @app.post("/auth/login")
@@ -347,7 +425,27 @@ def login():
         400: { "error": "Email and password required" } if fields missing
         401: { "error": "Invalid credentials" } if login fails
     """
-    pass
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"success": False, "message": "Email and/or Password fields are missing"}), 400
+
+    email = data.get("email")
+    password = data.get("password")
+
+    try:
+      response = sign_in(email, password)  
+    except Exception:
+        return jsonify({"success": False, "message": "Invalid credentials"}), 401
+    
+    return jsonify({
+        "success": True,
+        "access_token": response.session.access_token,
+        "refresh_token": response.session.refresh_token,
+        "user_id": str(response.user.id)
+        }), 200
+
+
 
 @app.post("/auth/logout")
 def logout():
@@ -364,7 +462,9 @@ def logout():
     Returns:
         200: { "message": "Logged out successfully" }
     """
-    pass
+    sign_out()
+    return jsonify({"success": True, "message": "Logged out successfully"}), 200
+
 
 @app.get("/session/<session_id>/history")
 def session_history(session_id: str):
@@ -386,7 +486,18 @@ def session_history(session_id: str):
         401: { "error": "Unauthorized" } if JWT missing or invalid
         404: { "error": "Session not found" } if session_id doesn't exist
     """
-    pass
+    user = get_current_user()
+    if not user:
+        return jsonify({"success": False, "message": "Unauthorized"}), 401
+
+    session = _sessions.get(session_id) or load_session(session_id)
+
+    if not session:
+        return jsonify({"success": False, "message": "Session not found"}), 404
+
+    history = get_history(session_id)
+
+    return jsonify(history), 200
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
