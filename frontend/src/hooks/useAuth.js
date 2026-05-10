@@ -2,9 +2,15 @@ import { useState } from "react";
 
 const BASE_URL = "http://127.0.0.1:5000";
 
-
 export function useAuth() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const token = localStorage.getItem("access_token");
+    const userId = localStorage.getItem("user_id");
+    if (token && userId) {
+      return { id: userId, token };
+    }
+    return null;
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 

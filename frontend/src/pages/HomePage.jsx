@@ -1,6 +1,17 @@
+import { useState } from "react";
 import { SUPPORTED_LANGUAGES } from "../constants/languages";
 import Header from "../components/Header";
-import { useState } from "react";
+
+const LANG_CODES = {
+  English: "GB",
+  Spanish: "ES",
+  French: "FR",
+  Mandarin: "CN",
+  Arabic: "SA",
+  Hindi: "IN",
+  Portuguese: "BR",
+  Swahili: "KE",
+};
 
 function HomePage({
   selectedLanguage,
@@ -8,85 +19,91 @@ function HomePage({
   streak,
   difficulty,
   sessionId,
-  beginSession,
+  onStart,
+  user,
+  logout,
+  onHistory,
+  onHome,
 }) {
   const [topic, setTopic] = useState("");
+  const [error, setError] = useState("");
+
+  const handleStart = () => {
+    if (!topic.trim()) {
+      setError("Please enter a topic first");
+      return;
+    }
+    setError("");
+    onStart(topic, selectedLanguage.name);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header selectedLanguage={selectedLanguage} onChange={changeLanguage} />
-      {/* Hero */}
-      <div className="max-w-xl mx-auto px-6 pt-12 pb-6 text-center">
-        <h1 className="text-3xl font-medium text-gray-900 mb-3">
-          Learn anything, in any language
+    <div className="min-h-screen bg-[#0f1117] text-white flex flex-col">
+      <Header
+        user={user}
+        logout={logout}
+        onHistory={onHistory}
+        onHome={onHome}
+      />
+
+      <div className="flex-1 flex flex-col items-center justify-center px-6 text-center pb-12">
+        <h1 className="text-4xl font-bold mb-3 leading-tight">
+          What do you want
+          <br />
+          to learn today?
         </h1>
-        <p className="text-gray-500 text-base">
-          Pick a topic, choose your language, and start learning with AI-powered
-          lessons.
+        <p className="text-gray-400 text-base mb-10">
+          AI-generated lessons in your language, adapting to your level in real
+          time.
         </p>
-      </div>
 
-      <div className="max-w-xl mx-auto px-6 space-y-4">
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-3">
-          <div className="bg-white rounded-xl border border-gray-100 p-4 text-center">
-            <p className="text-2xl font-medium text-gray-900">{streak}</p>
-            <p className="text-xs text-gray-400 mt-1">Streak</p>
-          </div>
-          <div className="bg-white rounded-xl border border-gray-100 p-4 text-center">
-            <p className="text-2xl font-medium text-gray-900">
-              {difficulty ?? "—"}
-            </p>
-            <p className="text-xs text-gray-400 mt-1">Difficulty</p>
-          </div>
-          <div className="bg-white rounded-xl border border-gray-100 p-4 text-center">
-            <p className="text-2xl font-medium text-gray-900">
-              {sessionId ?? "—"}
-            </p>
-            <p className="text-xs text-gray-400 mt-1">Session</p>
-          </div>
+        <div className="w-full max-w-lg mb-6">
+          <label className="text-xs text-gray-400 uppercase tracking-widest mb-2 block text-left">
+            Topic
+          </label>
+          <input
+            type="text"
+            value={topic}
+            onChange={(e) => {
+              setTopic(e.target.value);
+              setError("");
+            }}
+            placeholder="e.g. Photosynthesis, World War II, Basic Algebra..."
+            className="w-full bg-[#1c1f2e] border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 text-sm"
+          />
+          {error && (
+            <p className="text-red-400 text-xs mt-1 text-left">{error}</p>
+          )}
         </div>
 
-        {/* Topic input */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <p className="text-xs text-gray-400 mb-3">
-            What do you want to learn?
-          </p>
-          <div className="flex gap-2">
-            <input
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              type="text"
-              placeholder="e.g. fractions, photosynthesis, WW2..."
-              className="flex-1 text-sm px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300"
-            />
-            <button
-              onClick={(e) => beginSession(topic, selectedLanguage)}
-              className="text-sm px-4 py-2 rounded-lg bg-gray-900 text-white font-medium whitespace-nowrap"
-            >
-              Start lesson
-            </button>
-          </div>
-        </div>
-
-        {/* Language picker */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <p className="text-xs text-gray-400 mb-3">Choose your language</p>
-          <div className="grid grid-cols-4 gap-2">
+        <div className="w-full max-w-lg mb-8">
+          <label className="text-xs text-gray-400 uppercase tracking-widest mb-3 block text-left">
+            Language
+          </label>
+          <div className="grid grid-cols-4 gap-3">
             {SUPPORTED_LANGUAGES.map((lang) => (
               <button
                 key={lang.name}
                 onClick={() => changeLanguage(lang.name)}
-                className={`py-2 px-1 rounded-lg text-sm border transition-all text-center ${
+                className={`py-3 px-2 rounded-xl border text-center transition-all ${
                   selectedLanguage.name === lang.name
-                    ? "border-blue-400 bg-blue-50 text-blue-800"
-                    : "border-gray-100 bg-gray-50 text-gray-700 hover:border-gray-300"
+                    ? "border-blue-500 bg-blue-600/20 text-white"
+                    : "border-gray-700 bg-[#1c1f2e] text-gray-300 hover:border-gray-500"
                 }`}
               >
-                {lang.flag} {lang.name}
+                <div className="font-bold text-sm">{LANG_CODES[lang.name]}</div>
+                <div className="text-xs text-gray-400 mt-0.5">{lang.name}</div>
               </button>
             ))}
           </div>
         </div>
+
+        <button
+          onClick={handleStart}
+          className="w-full max-w-lg py-3.5 rounded-xl border border-gray-600 text-white font-semibold text-base hover:bg-white hover:text-black transition-all"
+        >
+          Start Learning →
+        </button>
       </div>
     </div>
   );
