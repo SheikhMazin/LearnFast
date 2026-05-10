@@ -9,11 +9,22 @@ function HomePage({
   difficulty,
   sessionId,
   beginSession,
+  user,
+  logout,
+  onHistory,
+  onHome,
 }) {
   const [topic, setTopic] = useState("");
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header selectedLanguage={selectedLanguage} onChange={changeLanguage} />
+      <Header
+        selectedLanguage={selectedLanguage}
+        onChange={changeLanguage}
+        user={user}
+        logout={logout}
+        onHistory={onHistory}
+        onHome={onHome}
+      />
       {/* Hero */}
       <div className="max-w-xl mx-auto px-6 pt-12 pb-6 text-center">
         <h1 className="text-3xl font-medium text-gray-900 mb-3">
