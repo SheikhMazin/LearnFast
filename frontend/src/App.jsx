@@ -1,5 +1,15 @@
+import { useState } from "react";
+import Header from "./components/Header";
+
 function App() {
-  return <div className="bg-blue-500 text-white p-8">Tailwind</div>;
+  const [selectedLanguage, setSelectedLanguage] = useState("English");
+
+  return (
+    <Header
+      selectedLanguage={selectedLanguage}
+      onChange={setSelectedLanguage}
+    />
+  );
 }
 
 export default App;
