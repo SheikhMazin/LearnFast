@@ -1,53 +1,43 @@
-export async function getlanguages() {
-  const response = await fetch("http://localhost:5000/languages");
+const baseURL = "http://127.0.0.1:5000";
+
+export async function getLanguages() {
+  const response = await fetch(`${baseURL}/languages`);
   const data = await response.json();
   return data;
 }
 
 export async function startSession(topic, language) {
-  const response = await fetch("http://localhost:5000/session/start", {
+  const response = await fetch(`${baseURL}/session/start`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ topic, language }),
   });
-  const sessionData = await response.json();
-  return sessionData;
+  return await response.json();
 }
 
 export async function getLesson(topic, language) {
-  const response = await fetch("http://localhost:5000/lesson", {
+  const response = await fetch(`${baseURL}/lesson`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ topic, language }),
   });
-  const lessonData = await response.json();
-  return lessonData;
+  return await response.json();
 }
 
 export async function getChallenge(topic, language) {
-  const response = await fetch("http://localhost:5000/challenge", {
+  const response = await fetch(`${baseURL}/challenge`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ topic, language }),
   });
-  const challengeData = await response.json();
-  return challengeData;
+  return await response.json();
 }
 
 export async function submitAnswer(answer) {
-  const response = await fetch("http://localhost:5000/answer", {
+  const response = await fetch(`${baseURL}/answer`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(answer),
   });
-  const answerData = await response.json();
-  return answerData;
+  return await response.json();
 }

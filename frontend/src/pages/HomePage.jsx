@@ -1,5 +1,6 @@
 import { SUPPORTED_LANGUAGES } from "../constants/languages";
 import Header from "../components/Header";
+import { useState } from "react";
 
 function HomePage({
   selectedLanguage,
@@ -7,7 +8,9 @@ function HomePage({
   streak,
   difficulty,
   sessionId,
+  beginSession,
 }) {
+  const [topic, setTopic] = useState("");
   return (
     <div className="min-h-screen bg-gray-50">
       <Header selectedLanguage={selectedLanguage} onChange={changeLanguage} />
@@ -50,11 +53,16 @@ function HomePage({
           </p>
           <div className="flex gap-2">
             <input
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
               type="text"
               placeholder="e.g. fractions, photosynthesis, WW2..."
               className="flex-1 text-sm px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
-            <button className="text-sm px-4 py-2 rounded-lg bg-gray-900 text-white font-medium whitespace-nowrap">
+            <button
+              onClick={(e) => beginSession(topic, selectedLanguage)}
+              className="text-sm px-4 py-2 rounded-lg bg-gray-900 text-white font-medium whitespace-nowrap"
+            >
               Start lesson
             </button>
           </div>

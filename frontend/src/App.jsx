@@ -5,7 +5,7 @@ import HomePage from "./pages/HomePage";
 
 function App() {
   const { selectedLanguage, changeLanguage } = useLanguage();
-  const { sessionId, difficulty, streak } = useSession();
+  const { sessionId, difficulty, streak, beginSession } = useSession();
   const direction = getDirection(selectedLanguage);
 
   return (
@@ -16,6 +16,7 @@ function App() {
         streak={streak}
         difficulty={difficulty}
         sessionId={sessionId}
+        beginSession={beginSession}
       />
     </div>
   );
