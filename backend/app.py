@@ -3,7 +3,15 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from core.session import create_session, update_session, reset_session, get_session_stats
 from core.difficulty import select_question_type
-from ai.generator import generate_lesson, generate_challenge, generate_feedback
+from core.curriculum import (
+    get_current_node, record_answer,
+    get_curriculum_for_response, build_node_context,
+)
+from ai.generator import (
+    generate_lesson, generate_challenge, generate_feedback,
+    generate_curriculum, generate_flashcard, generate_qa,
+    check_answer_semantic,
+)
 from db import *
 
 load_dotenv()
@@ -107,7 +115,17 @@ def session_start():
     if difficulty_level not in [1, 2, 3, 4, 5]:
         return jsonify({"success": False, "message": "Difficulty type not supported"}), 400
 
-    session_dict = create_session(language, topic, difficulty_level) 
+    session_dict = create_session(language, topic, difficulty_level)
+
+    # Generate curriculum upfront — falls back gracefully on AI failure
+    try:
+        curriculum = generate_curriculum(topic, language)
+        session_dict["curriculum"]   = curriculum
+        session_dict["current_node"] = 0
+    except Exception:
+        session_dict["curriculum"]   = []
+        session_dict["current_node"] = 0
+
     _sessions[session_dict["session_id"]] = session_dict
     save_session(session_dict, user_id)
 
@@ -117,11 +135,13 @@ def session_start():
         "session_id":         session_dict["session_id"],
         "language":           session_dict["language"],
         "topic":              session_dict["topic"],
+        "current_difficulty": stats["current_difficulty"],
+        "current_node":       session_dict["current_node"],
+        "curriculum":         session_dict["curriculum"],
         "questions_answered": stats["questions_answered"],
         "total_correct":      stats["total_correct"],
         "accuracy":           stats["accuracy"],
         "current_streak":     stats["current_streak"],
-        "current_difficulty": stats["current_difficulty"],
         "confidence_score":   stats["confidence_score"],
         "avg_time_seconds":   stats["avg_time_seconds"],
     }), 201
@@ -152,12 +172,14 @@ def lesson():
     if not session:
         return jsonify({"error": "Session not found"}), 404
 
-    topic = data.get("topic", session["topic"])
-    language = data.get("language", session["language"])
+    topic      = data.get("topic", session["topic"])
+    language   = data.get("language", session["language"])
     difficulty = session["difficulty"]
+    node       = get_current_node(session)
+    concept    = node["concept"] if node else None
 
     try:
-        result = generate_lesson(topic, language, difficulty)
+        result = generate_lesson(topic, language, difficulty, concept=concept)
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -195,15 +217,18 @@ def challenge():
     if not session:
         return jsonify({"error": "Session not found"}), 404
     
-    topic = data.get("topic", session["topic"])
-    language = data.get("language", session["language"])
-    difficulty = session["difficulty"]
+    topic          = data.get("topic", session["topic"])
+    language       = data.get("language", session["language"])
+    difficulty     = session["difficulty"]
     lesson_context = data.get("lesson_context", "")
-    
+    node           = get_current_node(session)
+    concept        = node["concept"] if node else None
+
     try:
         question_type = select_question_type(difficulty, session["last_question_type"])
-        result = generate_challenge(topic, language, lesson_context, difficulty, question_type)
-        
+        result = generate_challenge(
+            topic, language, lesson_context, difficulty, question_type, concept=concept
+        )
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -259,25 +284,42 @@ def answer():
     question_type = data.get("question_type", "")
     time_taken_seconds = data.get("time_taken_seconds", 0.0)
 
-    if question_type == "short_answer":
-        is_correct = True
-    else:
-        is_correct = user_answer.strip().lower() == correct_answer.strip().lower()
+    exact_match = user_answer.strip().lower() == correct_answer.strip().lower()
 
+    if question_type == "short_answer":
+        # Always run semantic check — open-ended answers can't be string-compared
+        is_correct = check_answer_semantic(user_answer, correct_answer, session["language"])
+    elif question_type == "fill_blank":
+        # Exact match is free; semantic check handles articles, synonyms, spacing
+        is_correct = exact_match or check_answer_semantic(
+            user_answer, correct_answer, session["language"]
+        )
+    else:
+        is_correct = exact_match
+
+    # Update session performance metrics
     update_session(session, is_correct, time_taken_seconds, question_type)
 
+    # Curriculum traversal — determines next_action and advances/rolls back the map
+    next_action  = record_answer(session, is_correct)
+    node_context = build_node_context(session, next_action)
+
     try:
-        feedback_dict = generate_feedback(user_answer, correct_answer, session["language"], is_correct, session["topic"])
+        feedback_dict = generate_feedback(
+            user_answer, correct_answer, session["language"], is_correct, session["topic"]
+        )
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
     stats = get_session_stats(session)
 
     return jsonify({
-        "feedback":   feedback_dict["feedback"],
-        "is_correct": is_correct,
-        "language":   session["language"],
-        "session":    stats,
+        "feedback":     feedback_dict["feedback"],
+        "is_correct":   is_correct,
+        "language":     session["language"],
+        "next_action":  next_action,
+        "node_context": node_context,
+        "session":      stats,
     }), 200
 
 
@@ -353,6 +395,65 @@ def session_reset(session_id: str):
     save_session(session, user_id)
 
     return jsonify(session), 200
+
+
+@app.get("/curriculum/<session_id>")
+def curriculum(session_id: str):
+    user = get_current_user()
+    if not user:
+        return jsonify({"success": False, "message": "Unauthorized"}), 401
+
+    session = _sessions.get(session_id) or load_session(session_id)
+    if not session:
+        return jsonify({"error": "Session not found"}), 404
+
+    return jsonify({
+        "session_id":   session_id,
+        "topic":        session["topic"],
+        "language":     session["language"],
+        "current_node": session.get("current_node", 0),
+        "nodes":        get_curriculum_for_response(session),
+    }), 200
+
+
+@app.post("/flashcard")
+def flashcard():
+    data       = request.get_json()
+    session_id = data.get("session_id")
+    session    = _sessions.get(session_id)
+    if not session:
+        return jsonify({"error": "Session not found"}), 404
+
+    node    = get_current_node(session)
+    concept = node["concept"] if node else session["topic"]
+
+    try:
+        card = generate_flashcard(concept, session["topic"], session["language"])
+        return jsonify(card), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.post("/ask")
+def ask():
+    data       = request.get_json()
+    session_id = data.get("session_id")
+    question   = data.get("question", "").strip()
+    session    = _sessions.get(session_id)
+
+    if not session:
+        return jsonify({"error": "Session not found"}), 404
+    if not question:
+        return jsonify({"error": "question field is required"}), 400
+
+    node    = get_current_node(session)
+    concept = node["concept"] if node else session["topic"]
+
+    try:
+        result = generate_qa(question, concept, session["topic"], session["language"])
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.post("/auth/signup")
