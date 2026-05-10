@@ -10,6 +10,8 @@ import LoadingPage from "./pages/LoadingPage";
 import SessionPage from "./pages/SessionPage";
 import CompletionPage from "./pages/CompletionPage";
 
+const BASE_URL = "https://learnfast-1.onrender.com";
+
 function App() {
   const { user, login, signup, logout } = useAuth();
   const { selectedLanguage, changeLanguage } = useLanguage();

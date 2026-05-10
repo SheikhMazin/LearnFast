@@ -21,7 +21,7 @@ hyperframe==6.1.0
 ibm-cos-sdk==2.14.3
 ibm-cos-sdk-core==2.14.3
 ibm-cos-sdk-s3transfer==2.14.3
-ibm_watsonx_ai==1.5.11
+ibm_watsonx_ai
 idna==3.13
 itsdangerous==2.2.0
 Jinja2==3.1.6
