@@ -25,6 +25,32 @@ LIST_OF_LANGUAGES = [
         "Portuguese", "Swahili"
     ]
 
+def get_current_user():
+    """
+    Extract and verify the JWT from the Authorization header.
+
+    Called at the start of every protected route. Reads the Bearer token
+    from the Authorization header, passes it to get_user() in db.py for
+    Supabase verification, and returns the user object if valid.
+
+    The expected header format is:
+        Authorization: Bearer <access_token>
+
+    If the header is missing, malformed, or the token is invalid/expired,
+    returns None — the route should immediately return 401 in that case.
+
+    Args:
+        None — reads directly from Flask's request context
+
+    Returns:
+        Supabase UserResponse object if token is valid.
+        None if header is missing, malformed, or token is invalid.
+
+    Raises:
+        Nothing — all failure cases return None
+    """
+    pass
+
 
 @app.post("/session/start")
 def session_start():
@@ -234,7 +260,69 @@ def session_reset(session_id: str):
     return jsonify(session), 200
 
 
+@app.post("/auth/login")
+def login():
+    """
+    Sign in an existing user and return a JWT token.
 
+    Reads email and password from the request body, calls sign_in() from
+    db.py, and returns the access_token and user_id. The frontend must
+    store the access_token and send it in every subsequent request as:
+        Authorization: Bearer <access_token>
+
+    Wrap in try/except — if credentials are wrong, return 401.
+
+    Request body:
+        {
+            "email": "user@example.com",
+            "password": "theirpassword"
+        }
+
+    Returns:
+        200: { "access_token": "...", "user_id": "..." }
+        400: { "error": "Email and password required" } if fields missing
+        401: { "error": "Invalid credentials" } if login fails
+    """
+    pass
+
+@app.post("/auth/logout")
+def logout():
+    """
+    Sign out the current user.
+
+    Calls sign_out() from db.py which invalidates the session on
+    Supabase's side. No request body needed — Supabase invalidates
+    the current session automatically.
+
+    Does NOT require authentication check — if the user is already
+    logged out, signing out again is a no-op and should still return 200.
+
+    Returns:
+        200: { "message": "Logged out successfully" }
+    """
+    pass
+
+@app.get("/session/<session_id>/history")
+def session_history(session_id: str):
+    """
+    Return the full lesson history for a session, oldest first.
+
+    Protected route — requires valid JWT in Authorization header.
+    Looks up the session (memory first, then DB fallback), then calls
+    get_history() from db.py to fetch all lesson, challenge, and feedback
+    entries logged for this session.
+
+    Args:
+        session_id: UUID string from the URL path
+
+    Returns:
+        200: List of history entry dicts ordered chronologically.
+             Returns empty list [] if no history yet — never 404 for
+             empty history, only 404 if the session itself doesn't exist.
+        401: { "error": "Unauthorized" } if JWT missing or invalid
+        404: { "error": "Session not found" } if session_id doesn't exist
+    """
+    pass
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
