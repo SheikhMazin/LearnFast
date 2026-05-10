@@ -11,6 +11,8 @@ import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import HistoryPage from "./pages/HistoryPage";
 
+const BASE_URL = "https://learnfast-1.onrender.com";
+
 function App() {
   const { user, login, signup, logout } = useAuth();
   const { selectedLanguage, changeLanguage } = useLanguage();
@@ -49,7 +51,7 @@ function App() {
 
   const handleStart = async (topicInput, language) => {
     setTopic(topicInput);
-    const sessionRes = await fetch("http://127.0.0.1:5000/session/start", {
+    const sessionRes = await fetch(`${BASE_URL}/session/start`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -61,7 +63,7 @@ function App() {
     setSessionId(sessionData.session_id);
     setDifficulty("Beginner");
 
-    const lessonRes = await fetch("http://127.0.0.1:5000/lesson", {
+    const lessonRes = await fetch(`${BASE_URL}/lesson`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -79,7 +81,7 @@ function App() {
   };
 
   const handleReady = async () => {
-    const res = await fetch("http://127.0.0.1:5000/challenge", {
+    const res = await fetch(`${BASE_URL}/challenge`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -102,7 +104,7 @@ function App() {
 
   const handleSubmit = async (answer) => {
     setUserAnswer(answer);
-    const res = await fetch("http://127.0.0.1:5000/answer", {
+    const res = await fetch(`${BASE_URL}/answer`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
