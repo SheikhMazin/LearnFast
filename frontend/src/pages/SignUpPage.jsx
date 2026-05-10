@@ -6,6 +6,8 @@ function SignUpPage({ onSignUp, onGoToLogin }) {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const validate = () => {
     const newErrors = {};
@@ -18,13 +20,14 @@ function SignUpPage({ onSignUp, onGoToLogin }) {
     return newErrors;
   };
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     const newErrors = validate();
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-    onSignUp();
+    if (Object.keys(newErrors).length > 0) { setErrors(newErrors); return; }
+    setLoading(true);
+    setServerError("");
+    const success = await onSignUp(email, password);
+    if (!success) setServerError("Signup failed. Email may already be in use.");
+    setLoading(false);
   };
 
   const field = (label, type, placeholder, value, setter, errorKey) => (
@@ -32,6 +35,7 @@ function SignUpPage({ onSignUp, onGoToLogin }) {
       <label className="text-xs text-gray-400 mb-1 block">{label}</label>
       <input
         type={type}
+        placeholder={placeholder}
         value={value}
         onChange={(e) => { setter(e.target.value); setErrors(p => ({ ...p, [errorKey]: "" })); }}
         className={`w-full text-sm px-3 py-2 rounded-lg border bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 ${errors[errorKey] ? "border-red-300" : "border-gray-200"}`}
@@ -49,6 +53,12 @@ function SignUpPage({ onSignUp, onGoToLogin }) {
           <p className="text-sm text-gray-400 mt-1">Create your account</p>
         </div>
 
+        {serverError && (
+          <div className="bg-red-50 border border-red-200 text-red-600 text-xs rounded-lg px-3 py-2 mb-4">
+            {serverError}
+          </div>
+        )}
+
         <div className="space-y-4">
           {field("Full name", "text", "John Doe", name, setName, "name")}
           {field("Email", "email", "you@example.com", email, setEmail, "email")}
@@ -57,19 +67,17 @@ function SignUpPage({ onSignUp, onGoToLogin }) {
 
           <button
             onClick={handleSignUp}
-            className="w-full text-sm py-2.5 rounded-lg bg-gray-900 text-white font-medium mt-2"
+            disabled={loading}
+            className="w-full text-sm py-2.5 rounded-lg bg-gray-900 text-white font-medium mt-2 disabled:opacity-50"
           >
-            Create account
+            {loading ? "Creating account..." : "Create account"}
           </button>
         </div>
 
         <p className="text-center text-xs text-gray-400 mt-6">
           Already have an account?{" "}
-          <span onClick={onGoToLogin} className="text-gray-700 cursor-pointer hover:underline">
-            Sign in
-          </span>
+          <span onClick={onGoToLogin} className="text-gray-700 cursor-pointer hover:underline">Sign in</span>
         </p>
-
       </div>
     </div>
   );
