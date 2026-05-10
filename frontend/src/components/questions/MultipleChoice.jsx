@@ -7,7 +7,7 @@ function MultipleChoice({ question, options, onSubmit }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-white text-base leading-snug font-medium">{question}</p>
+      <p className="text-base leading-snug font-medium" style={{ color: "var(--ink)" }}>{question}</p>
 
       <div className="flex flex-col gap-2">
         {options?.map((opt, i) => {
@@ -17,20 +17,19 @@ function MultipleChoice({ question, options, onSubmit }) {
             <button
               key={i}
               onClick={() => setSelected(opt)}
-              className={`flex items-center gap-3 px-4 py-3.5 rounded-xl border text-left transition-all ${
-                isSelected
-                  ? "border-blue-500 bg-blue-600/15 text-white"
-                  : "border-gray-700/80 bg-[#0f1117] text-gray-300 hover:border-gray-600 hover:text-white"
-              }`}
+              className={`option-btn flex items-center gap-3 px-4 py-3 text-left w-full ${isSelected ? "selected" : ""}`}
             >
               <span
-                className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-                  isSelected ? "bg-blue-600 text-white" : "bg-gray-800 text-gray-500"
-                }`}
+                className="w-7 h-7 rounded flex items-center justify-center text-xs font-bold flex-shrink-0"
+                style={{
+                  background: isSelected ? "var(--green)" : "var(--card-2)",
+                  border: `1px solid ${isSelected ? "var(--green)" : "var(--card-border)"}`,
+                  color: isSelected ? "#fff" : "var(--ink-muted)",
+                }}
               >
                 {LETTERS[i]}
               </span>
-              <span className="text-sm">{label}</span>
+              <span className="text-sm" style={{ color: "var(--ink)" }}>{label}</span>
             </button>
           );
         })}
@@ -39,7 +38,7 @@ function MultipleChoice({ question, options, onSubmit }) {
       <button
         onClick={() => selected && onSubmit(LETTERS[options.indexOf(selected)])}
         disabled={!selected}
-        className="w-full py-3 rounded-xl border border-gray-600 text-white font-medium hover:bg-white hover:text-black transition-all text-sm disabled:opacity-30 disabled:cursor-not-allowed"
+        className="btn-primary w-full py-3 text-sm"
       >
         Submit answer
       </button>

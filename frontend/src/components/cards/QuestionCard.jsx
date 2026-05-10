@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { FlameIcon } from "../Icons";
 import MultipleChoice from "../questions/MultipleChoice";
 import FillBlank from "../questions/FillBlank";
 import TrueFalse from "../questions/TrueFalse";
@@ -19,7 +20,7 @@ function QuestionCard({ data, onAnswer, stats, isReadOnly }) {
   const renderInput = () => {
     if (isReadOnly) {
       return (
-        <p className="text-gray-600 text-sm text-center py-8">
+        <p className="text-sm text-center py-8" style={{ color: "var(--ink-muted)" }}>
           Answer already submitted — navigate forward to resume.
         </p>
       );
@@ -44,17 +45,36 @@ function QuestionCard({ data, onAnswer, stats, isReadOnly }) {
     <div className="p-6 flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <div className="flex gap-2 flex-wrap">
-          <span className="px-2.5 py-0.5 rounded-full bg-purple-900/40 border border-purple-800/60 text-purple-300 text-xs capitalize">
+          <span
+            className="px-2.5 py-0.5 text-xs capitalize"
+            style={{
+              background: "#dff0d4",
+              border: "1px solid var(--green)",
+              color: "var(--green)",
+              borderRadius: "3px 8px 6px 3px / 4px 3px 8px 4px",
+            }}
+          >
             {question_type?.replace(/_/g, " ")}
           </span>
           {stats?.difficulty && (
-            <span className="px-2.5 py-0.5 rounded-full bg-gray-800 border border-gray-700 text-gray-500 text-xs">
+            <span
+              className="px-2.5 py-0.5 text-xs"
+              style={{
+                background: "var(--card-2)",
+                border: "1px solid var(--card-border)",
+                color: "var(--ink-muted)",
+                borderRadius: "3px 8px 6px 3px / 4px 3px 8px 4px",
+              }}
+            >
               {DIFF_LABEL[stats.difficulty]}
             </span>
           )}
         </div>
         {stats && (
-          <span className="text-orange-400 text-sm flex-shrink-0">🔥 {stats.streak}</span>
+          <span className="text-sm flex-shrink-0 flex items-center gap-1" style={{ color: "var(--warning)" }}>
+            <FlameIcon className="w-3.5 h-3.5" />
+            {stats.streak}
+          </span>
         )}
       </div>
       {renderInput()}

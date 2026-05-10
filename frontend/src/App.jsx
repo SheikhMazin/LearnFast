@@ -17,20 +17,23 @@ function App() {
   const [page, setPage] = useState("home");
   const [session, setSession] = useState(null);
   const [pendingTopic, setPendingTopic] = useState("");
+  const [isResumingSession, setIsResumingSession] = useState(false);
   const [completionStats, setCompletionStats] = useState(null);
 
   const direction = getDirection(selectedLanguage);
 
-  const handleStart = async (topic) => {
+  const handleStart = async (topic, languageOverride = null, isResume = false) => {
     setPendingTopic(topic);
+    setIsResumingSession(isResume);
     setPage("loading");
+    const lang = languageOverride || selectedLanguage.name;
     try {
-      const data = await api.startSession(topic, selectedLanguage.name, 2);
+      const data = await api.startSession(topic, lang, 2);
       if (data.session_id) {
         setSession({
           sessionId: data.session_id,
           topic,
-          language: selectedLanguage.name,
+          language: lang,
           curriculum: data.curriculum || [],
           currentNode: data.current_node || 0,
           difficulty: data.current_difficulty || 2,
@@ -82,12 +85,13 @@ function App() {
           logout={logout}
         />
       )}
-      {page === "loading" && <LoadingPage topic={pendingTopic} />}
+      {page === "loading" && <LoadingPage topic={pendingTopic} isResume={isResumingSession} />}
       {page === "session" && session && (
         <SessionPage
           session={session}
           onComplete={handleComplete}
           onHome={handleReset}
+          onStart={handleStart}
           user={user}
           logout={logout}
         />

@@ -1,3 +1,5 @@
+import { FlameIcon, BoltIcon } from "../Icons";
+
 const DIFF_LABEL = { 1: "Beginner", 2: "Elementary", 3: "Intermediate", 4: "Advanced", 5: "Expert" };
 
 function LessonCard({ data, onReady, stats, isReadOnly }) {
@@ -7,31 +9,48 @@ function LessonCard({ data, onReady, stats, isReadOnly }) {
     <div className="p-6 flex flex-col gap-5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs text-gray-500 uppercase tracking-widest">Lesson</span>
+          <span className="text-xs uppercase tracking-widest" style={{ color: "var(--ink-muted)" }}>Lesson</span>
           {concept && (
-            <span className="px-2.5 py-0.5 rounded-full bg-blue-900/40 border border-blue-800/60 text-blue-300 text-xs">
+            <span
+              className="px-2.5 py-0.5 text-xs font-medium"
+              style={{
+                background: "#dff0d4",
+                border: "1px solid var(--green)",
+                color: "var(--green)",
+                borderRadius: "3px 8px 6px 3px / 4px 3px 8px 4px",
+              }}
+            >
               {concept}
             </span>
           )}
           {difficulty && (
-            <span className="px-2.5 py-0.5 rounded-full bg-purple-900/40 border border-purple-800/60 text-purple-300 text-xs">
+            <span
+              className="px-2.5 py-0.5 text-xs"
+              style={{
+                background: "rgba(74,124,56,0.12)",
+                border: "1px solid var(--green-muted)",
+                color: "var(--ink-2)",
+                borderRadius: "3px 8px 6px 3px / 4px 3px 8px 4px",
+              }}
+            >
               {DIFF_LABEL[difficulty] || `Lvl ${difficulty}`}
             </span>
           )}
         </div>
         {stats && (
-          <span className="text-orange-400 text-sm flex-shrink-0">🔥 {stats.streak}</span>
+          <span className="text-sm flex-shrink-0 flex items-center gap-1" style={{ color: "var(--warning)" }}>
+            <FlameIcon className="w-3.5 h-3.5" />
+            {stats.streak}
+          </span>
         )}
       </div>
 
-      <p className="text-white text-base leading-relaxed">{lesson}</p>
+      <p className="text-base leading-relaxed" style={{ color: "var(--ink)" }}>{lesson}</p>
 
       {!isReadOnly && (
-        <button
-          onClick={onReady}
-          className="mt-auto w-full py-3 rounded-xl border border-gray-600 text-white font-medium hover:bg-white hover:text-black transition-all text-sm"
-        >
-          Ready for a challenge ⚡
+        <button onClick={onReady} className="btn-outline mt-auto w-full py-3 text-sm flex items-center justify-center gap-2">
+          <BoltIcon className="w-3.5 h-3.5" />
+          Ready for a challenge
         </button>
       )}
     </div>

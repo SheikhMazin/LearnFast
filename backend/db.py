@@ -260,6 +260,34 @@ def save_lesson(session_id: str, user_id: str, type: str, language: str, topic: 
         "content":      content
         }).execute()
 
+def get_user_sessions(user_id: str) -> list:
+    """Return all sessions for a user, newest first, with summary stats."""
+    try:
+        response = (
+            supabase.table("sessions")
+            .select("session_id, topic, language, last_updated_at, data")
+            .eq("user_id", user_id)
+            .order("last_updated_at", desc=True)
+            .limit(30)
+            .execute()
+        )
+        results = []
+        for r in (response.data or []):
+            d = r.get("data") or {}
+            results.append({
+                "session_id":         r["session_id"],
+                "topic":              r["topic"],
+                "language":           r["language"],
+                "last_updated_at":    r["last_updated_at"],
+                "questions_answered": d.get("questions_answered", 0),
+                "current_node":       d.get("current_node", 0),
+                "total_nodes":        len(d.get("curriculum", [])),
+            })
+        return results
+    except Exception:
+        return []
+
+
 def get_history(session_id: str) -> list:
     """
     Return all lesson history entries for a given session, oldest first.

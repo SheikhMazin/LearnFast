@@ -1,193 +1,276 @@
 # LearnFast — Claude Code Context
 
 AI-powered multilingual adaptive learning app. Hackathon project, SDG #4 (Education).
-The goal: user picks a topic + language → AI generates a lesson → user answers questions →
-adaptive difficulty adjusts in real time → AI gives feedback. Everything generated natively
-in the target language — never translate after.
+User picks a topic + language → AI generates a curriculum → flashcard → lesson → challenge question →
+adaptive difficulty adjusts → AI feedback → repeat per concept node until curriculum complete.
+Everything generated natively in the target language — never translate after.
 
 ---
 
 ## Tech Stack
 
-| Layer      | Tech                                                        |
-|------------|-------------------------------------------------------------|
-| Backend    | Python + Flask (not FastAPI despite some docs saying so)    |
-| AI         | IBM Granite via watsonx.ai (raw HTTP, not the SDK)          |
-| DB         | SQLite (not yet wired up — in-memory sessions for now)      |
-| Frontend   | React + Vite + Tailwind (not started yet)                   |
+| Layer      | Tech                                                             |
+|------------|------------------------------------------------------------------|
+| Backend    | Python + Flask (not FastAPI)                                     |
+| AI         | IBM Granite (`ibm/granite-13b-instruct-v2`) via watsonx.ai raw HTTP |
+| Auth       | Supabase Auth (JWT — Bearer tokens)                              |
+| DB         | Supabase (Postgres) — sessions + lesson_history tables           |
+| Frontend   | React + Vite + Tailwind CSS v4                                   |
+| Fonts      | Cormorant Garamond (titles, italic) + Lora (body, serif)         |
 
 ---
 
 ## Repo Structure
 
 ```
-backend/
-├── app.py                  # Flask app — all routes live here
-├── helper.py               # ALREADY IMPLEMENTED — watsonx HTTP calls (use this)
-├── requirements.txt
-├── ai/
-│   ├── client.py           # watsonx client wrapper — stub, calls helper.py
-│   ├── prompts.py          # prompt builders — stub, all pass
-│   ├── generator.py        # orchestrates prompts + client — stub, all pass
-│   └── question_types.py   # question format instructions + response parser — stub
-├── core/
-│   ├── difficulty.py       # adaptive difficulty algorithm — stub, all pass
-│   └── session.py          # per-session state management — stub, all pass
-└── models/
-    └── schemas.py          # request/response dataclasses — defined, no logic needed
+LearnFast/
+├── CLAUDE.md
+├── backend/
+│   ├── app.py                  # Flask app — all routes, fully implemented
+│   ├── helper.py               # watsonx HTTP calls (DO NOT reimplment)
+│   ├── db.py                   # Supabase client + auth + session/history DB ops
+│   ├── requirements.txt
+│   ├── sanity_test.py          # End-to-end test for all 5 question types
+│   ├── ai/
+│   │   ├── client.py           # call_granite() wrapper — reads .env, calls helper.py
+│   │   ├── prompts.py          # All prompt builders (system, lesson, challenge, feedback, flashcard, QA, curriculum)
+│   │   ├── generator.py        # Orchestrates prompts → client → parser for all content types
+│   │   └── question_types.py   # Format instructions + parse_question_response() + preamble stripper
+│   ├── core/
+│   │   ├── curriculum.py       # Node traversal: get_current_node, record_answer, build_node_context
+│   │   ├── difficulty.py       # Adaptive algorithm: confidence score, adjust_difficulty, select_question_type
+│   │   └── session.py          # Session dict lifecycle: create, update, get_stats, reset
+│   └── models/
+│       └── schemas.py          # Request/response dataclasses (reference only, no logic)
+└── frontend/
+    ├── .env                    # VITE_API_URL=http://127.0.0.1:5000
+    ├── src/
+    │   ├── index.css           # Design system — all CSS variables, component classes
+    │   ├── App.jsx             # Root router (home/loading/session/complete) + auth gate
+    │   ├── api/
+    │   │   └── client.js       # All API calls + parseChallenge() normaliser
+    │   ├── constants/
+    │   │   └── languages.js    # SUPPORTED_LANGUAGES array
+    │   ├── hooks/
+    │   │   ├── useAuth.js      # login/signup/logout — stores access_token in localStorage
+    │   │   └── useLanguage.js  # selectedLanguage state + changeLanguage
+    │   ├── utils/
+    │   │   └── direction.js    # getDirection(language) → "rtl" | "ltr" for Arabic
+    │   ├── pages/
+    │   │   ├── LoginPage.jsx
+    │   │   ├── SignUpPage.jsx
+    │   │   ├── HomePage.jsx        # Topic input + language grid → calls api.startSession
+    │   │   ├── LoadingPage.jsx     # Spinner shown while session is being created
+    │   │   ├── SessionPage.jsx     # Main orchestrator: card history array, fetchLesson/Challenge, handleAnswer
+    │   │   └── CompletionPage.jsx  # Stats grid shown when curriculum_complete
+    │   └── components/
+    │       ├── Icons.jsx           # All SVG icons — no emojis anywhere in the app
+    │       ├── CurriculumMap.jsx   # Left sidebar (hidden below lg), shows node status
+    │       ├── QADrawer.jsx        # Slide-in overlay for Q&A thread with tutor
+    │       └── cards/
+    │           ├── CardStack.jsx   # Stack effect (ghost cards), dot indicator, nav arrows, ask-question button
+    │           ├── CardFrame.jsx   # Wrapper applying notebook-card aesthetic + spinner
+    │           ├── FlashCard.jsx   # 3D CSS flip card (perspective + preserve-3d)
+    │           ├── LessonCard.jsx  # Lesson text + "Ready for a challenge" CTA
+    │           ├── QuestionCard.jsx # Delegates to question type components
+    │           └── FeedbackCard.jsx # Correct/wrong result + AI feedback + transition message
+    │       └── questions/
+    │           ├── MultipleChoice.jsx  # A–D letter badge buttons
+    │           ├── FillBlank.jsx       # Inline input on ___ or fallback input below question
+    │           ├── TrueFalse.jsx       # Two large buttons, auto-submits after 350ms
+    │           ├── ShortAnswer.jsx     # Textarea + submit
+    │           └── Ordering.jsx        # HTML5 drag-and-drop reordering
 ```
+
+Dead files (old architecture, not used — safe to delete):
+`frontend/src/pages/{ChallengePage,FeedbackPage,HistoryPage,LessonPage,StatsPage}.jsx`
+`frontend/src/components/{Header,LanguageSwitcher}.jsx`
 
 ---
 
-## Critical: helper.py Is Already Working
+## Environment Variables
 
-**Do not reimplement the watsonx call.** `backend/helper.py` already handles auth and generation:
-
-```python
-from backend.helper import call_watsonx
-
-text = call_watsonx(system_prompt, user_message, API_KEY, URL, PROJECT_ID)
+### Backend (`backend/.env`)
 ```
-
-- `get_iam_token(API_KEY)` — exchanges IBM API key for a Bearer token via IAM
-- `call_watsonx(system_prompt, user_message, API_KEY, URL, PROJECT_ID)` — POSTs to watsonx,
-  returns the generated text string directly
-
-Model used: `ibm/granite-13b-instruct-v2`
-API version: `2024-05-31`
-
-### .env file needed (never commit this)
-
-```
-IBM_API_KEY=your_key_here
-IBM_PROJECT_ID=your_project_id_here
+IBM_API_KEY=...
+IBM_PROJECT_ID=...
 IBM_WATSONX_URL=https://us-south.ml.cloud.ibm.com
+SUPABASE_URL=https://....supabase.co
+SUPABASE_KEY=...
+```
+
+### Frontend (`frontend/.env`)
+```
+VITE_API_URL=http://127.0.0.1:5000
 ```
 
 ---
 
-## What Still Needs Implementing
+## Running the Project
 
-Every function body is `pass`. Each file has detailed comments describing exactly what to write.
-Implement in this order — each step unblocks the next:
+```bash
+# Backend
+cd backend
+pip install -r requirements.txt
+python app.py
+# → http://127.0.0.1:5000
 
-### 1. `backend/ai/client.py`
-Thin wrapper around `helper.py`. `call_granite()` should just read env vars and call
-`call_watsonx()` from helper. The singleton pattern in this file is optional — helper.py
-is stateless so no client object needs to persist.
-
-### 2. `backend/ai/prompts.py`
-Four functions that build strings — no external calls, pure Python:
-- `get_system_prompt(language)` — sets tutor persona + language lock
-- `build_lesson_prompt(topic, language, difficulty)` — asks for <80 word explanation
-- `build_challenge_prompt(topic, language, lesson_context, difficulty, question_type)`
-- `build_feedback_prompt(user_answer, correct_answer, language, is_correct, topic)`
-
-Key rule from the product doc: language instruction goes in the **system prompt**, not the
-user message. All content (options, feedback, error messages) must be in the target language.
-
-### 3. `backend/ai/question_types.py`
-- `get_question_type_instruction(question_type)` — returns the format string to paste into
-  the challenge prompt so Granite formats its output parseably (ANSWER: on its own line)
-- `parse_question_response(raw_response, question_type)` — splits on "ANSWER:" to extract
-  question body and correct answer. Wrap everything in try/except — return a fallback dict
-  if parsing fails.
-
-### 4. `backend/ai/generator.py`
-Three functions that wire prompts → client → parser:
-- `generate_lesson()` → returns `{lesson, topic, language, difficulty}`
-- `generate_challenge()` → returns parsed question dict from `parse_question_response()`
-- `generate_feedback()` → returns `{feedback, is_correct, language}`
-
-### 5. `backend/core/difficulty.py`
-The adaptive algorithm — pure Python math, no AI calls:
-- `calculate_confidence_score(streak, correctness_history, avg_time_seconds)` → float 0–1
-  Formula: accuracy of last 5 answers × time factor + streak bonus (capped at 0.3)
-- `adjust_difficulty(current_difficulty, session_stats)` → int 1–5
-  Increase if confidence ≥ 0.8 AND streak ≥ 3. Decrease if confidence ≤ 0.4 OR last 3 all wrong.
-- `select_question_type(difficulty, last_question_type)` → string
-  Uses `DIFFICULTY_QUESTION_TYPES` dict — avoids repeating the same type twice in a row.
-- `get_difficulty_label(difficulty)` → string (e.g. "intermediate")
-
-### 6. `backend/core/session.py`
-Dict-based session state — no DB yet:
-- `create_session(language, topic, starting_difficulty)` → fresh session dict with uuid
-- `update_session(session, is_correct, time_taken_seconds, question_type)` → mutates and
-  returns session; calls `adjust_difficulty()` internally
-- `get_session_stats(session)` → summary dict safe to send to frontend
-- `reset_session(session)` → clears metrics, keeps identity fields
-
-### 7. `backend/app.py` routes
-Six stub routes — implement after everything above is working:
-- `POST /session/start` — creates session, stores in `_sessions` dict
-- `POST /lesson` — reads difficulty from session, calls `generate_lesson()`
-- `POST /challenge` — reads difficulty + last_question_type from session, calls `generate_challenge()`
-- `POST /answer` — checks correctness, calls `update_session()` + `generate_feedback()`
-- `GET /session/<session_id>/stats` — returns `get_session_stats()`
-- `POST /session/<session_id>/reset` — calls `reset_session()`
-
-The in-memory store is `_sessions: dict` at the top of `app.py`. Key = session_id string.
-
----
-
-## Supported Languages
-
-| Language   | Script       | Notes                    |
-|------------|--------------|--------------------------|
-| English    | LTR          | Baseline                 |
-| Spanish    | LTR          | MVP                      |
-| French     | LTR          | MVP                      |
-| Mandarin   | LTR/Vertical | MVP                      |
-| Arabic     | RTL          | MVP — test RTL UI early  |
-| Hindi      | LTR          | MVP                      |
-| Portuguese | LTR          | MVP                      |
-| Swahili    | LTR          | High SDG impact          |
-
----
-
-## Question Types
-
-| Key              | Format Granite must output                                      |
-|------------------|-----------------------------------------------------------------|
-| `multiple_choice`| 4 options A–D, then `ANSWER: B`                                 |
-| `fill_blank`     | Sentence with `___`, then `ANSWER: word`                        |
-| `true_false`     | Statement, then `ANSWER: True/False`, then `JUSTIFICATION: ...` |
-| `short_answer`   | Open question, then `ANSWER: model answer`                      |
-| `ordering`       | Shuffled numbered steps, then `ANSWER: 3,1,4,2,5`              |
+# Frontend
+cd frontend
+npm install
+npm run dev
+# → http://localhost:5173 (or 5174 if 5173 is taken)
+```
 
 ---
 
 ## API Routes
 
-| Method | Route                          | Purpose                             |
-|--------|--------------------------------|-------------------------------------|
-| GET    | `/languages`                   | Returns list of supported languages |
-| POST   | `/session/start`               | Creates a new session               |
-| POST   | `/lesson`                      | Generates lesson for topic          |
-| POST   | `/challenge`                   | Generates question                  |
-| POST   | `/answer`                      | Submits answer, returns feedback    |
-| GET    | `/session/<id>/stats`          | Returns session performance stats   |
-| POST   | `/session/<id>/reset`          | Resets session metrics              |
+| Method | Route                          | Auth required | Purpose                                        |
+|--------|--------------------------------|---------------|------------------------------------------------|
+| GET    | `/`                            | No            | Health check                                   |
+| GET    | `/languages`                   | No            | Returns list of supported language strings     |
+| POST   | `/auth/signup`                 | No            | Creates Supabase user account                  |
+| POST   | `/auth/login`                  | No            | Returns access_token + refresh_token           |
+| POST   | `/auth/logout`                 | No            | Invalidates Supabase session                   |
+| POST   | `/session/start`               | Yes (JWT)     | Creates session, generates curriculum          |
+| POST   | `/lesson`                      | No            | Generates lesson for current curriculum node   |
+| POST   | `/flashcard`                   | No            | Generates flashcard for current node concept   |
+| POST   | `/challenge`                   | No            | Generates question (type selected by difficulty)|
+| POST   | `/answer`                      | No            | Checks answer, updates session, returns feedback|
+| POST   | `/ask`                         | No            | Q&A — answers a student question about the topic|
+| GET    | `/curriculum/<session_id>`     | Yes (JWT)     | Returns curriculum node list with statuses     |
+| GET    | `/session/<session_id>/stats`  | Yes (JWT)     | Returns performance stats                      |
+| POST   | `/session/<session_id>/reset`  | Yes (JWT)     | Resets session metrics, restarts curriculum    |
+| GET    | `/session/<session_id>/history`| Yes (JWT)     | Returns lesson_history rows from DB            |
+
+Note: `/lesson`, `/challenge`, `/answer`, `/flashcard`, `/ask` are intentionally unprotected —
+they rely on `session_id` from the body (sessions are already tied to a user in the DB).
 
 ---
 
-## Running the Backend
+## Session Flow (Frontend)
 
-```bash
-cd backend
-pip install -r requirements.txt
-python app.py
-# Server starts at http://localhost:5000
+```
+api.startSession(topic, language)
+    → session created + curriculum generated (6–8 nodes)
+    → SessionPage bootstraps with parallel calls:
+        Promise.all([api.getFlashcard, api.getLesson])
+
+Per node loop:
+    flashcard → lesson → challenge question → answer → feedback
+        feedback.next_action drives what comes next:
+            "advance"             → next node: fetchFlashcard()
+            "re_explore"          → same node: fetchChallenge()
+            "rollback"            → prerequisite node: fetchLesson()
+            "curriculum_complete" → CompletionPage
 ```
 
-Test with Thunder Client, Postman, or `curl`. The `/` route returns `{"status": "LearnFast backend running"}` to confirm it's up.
+Card history is stored as `cards[]` + `cardIdx` in SessionPage state.
+Going back = decrement `cardIdx`. Going forward past end = fetch next card from API.
+
+---
+
+## Challenge Response Shape
+
+The backend returns question data with a human-readable key:
+```json
+{ "True or False with Justification": { "type": "true_false", "question": "...", "correct_answer": "True" } }
+```
+
+`parseChallenge()` in `client.js` normalises this:
+- Finds the first non-"error" key
+- Reads `q.type` (or falls back to the key itself)
+- Normalises to snake_case (`question_type`)
+- Returns `{ ...q, question_type }` spread so all fields land flat on the data object
+
+---
+
+## Adaptive Difficulty
+
+Scores range 1–5. Algorithm in `core/difficulty.py`:
+- **Confidence score** = (accuracy of last 5) × time_factor + streak_bonus (capped 0.3)
+- **Increase** if confidence ≥ 0.8 AND streak ≥ 3
+- **Decrease** if confidence ≤ 0.4 OR last 3 all wrong
+- **Question type pool** per difficulty:
+  - 1: true_false, multiple_choice
+  - 2: multiple_choice, fill_blank
+  - 3: multiple_choice, fill_blank, short_answer
+  - 4: fill_blank, short_answer, ordering
+  - 5: short_answer, ordering
+
+---
+
+## Design System
+
+All tokens in `frontend/src/index.css` as CSS custom properties. Key colours:
+
+| Token           | Value      | Use                               |
+|-----------------|------------|-----------------------------------|
+| `--bg`          | `#0b1709`  | Page backgrounds (dark forest)    |
+| `--card`        | `#f8f4e8`  | Notebook card (parchment)         |
+| `--card-line`   | `#e6dfc6`  | Ruled lines on notebook card      |
+| `--card-margin` | `#d4a0a0`  | Red left margin on notebook card  |
+| `--green`       | `#4a7c38`  | Primary action colour             |
+| `--ink`         | `#1e1a10`  | Text on paper cards (dark brown)  |
+| `--text`        | `#c8dfc0`  | Text on dark backgrounds          |
+
+Component classes: `.notebook-card`, `.notebook-card-plain`, `.notebook-ghost`,
+`.btn-primary`, `.btn-outline`, `.option-btn`, `.ink-input`, `.paper-textarea`, `.font-title`, `.card-enter`
+
+No emojis anywhere — all icons are SVG components exported from `components/Icons.jsx`.
+
+---
+
+## Supabase Tables
+
+**`sessions`**
+| Column           | Type      |
+|------------------|-----------|
+| session_id       | uuid PK   |
+| user_id          | uuid (FK) |
+| language         | text      |
+| topic            | text      |
+| data             | jsonb     | ← full session dict
+| last_updated_at  | timestamp |
+
+**`lesson_history`**
+| Column     | Type      |
+|------------|-----------|
+| id         | uuid PK   |
+| session_id | uuid (FK) |
+| user_id    | uuid      |
+| type       | text      | ← 'lesson', 'challenge', 'feedback'
+| language   | text      |
+| topic      | text      |
+| difficulty | int       |
+| content    | jsonb     |
+| created_at | timestamp |
+
+---
+
+## Supported Languages
+
+English, Spanish, French, Mandarin, Arabic (RTL — `dir="rtl"` set via `getDirection()`),
+Hindi, Portuguese, Swahili.
+
+---
+
+## Known Quirks
+
+- **fill_blank without `___`**: Granite sometimes doesn't emit the blank marker (especially for math). FillBlank component handles this — detects no `___` and renders a standard text input below the question instead.
+- **Preamble stripping**: `_strip_preamble()` in `question_types.py` can accidentally strip the question itself if it starts with a phrase like "Using the following...". True/false questions are most affected.
+- **Session not in memory after restart**: Routes fall back to `load_session(session_id)` from Supabase, so sessions survive server restarts.
+- **IBM IAM token**: `helper.py` fetches a fresh token on every call (no caching). This adds ~300ms per request. Acceptable for hackathon, but cache it for production.
+- **Supabase email confirmation**: Disable in Supabase dashboard under Authentication → Settings → Disable email confirmations, or new signups won't be able to log in immediately.
 
 ---
 
 ## What NOT to Do
 
-- Don't add authentication/login — not in scope for the demo
-- Don't add Docker, Redis, or microservices — hackathon, 22 hours
-- Don't translate content after generation — always generate natively in the target language
-- Don't install the `ibm_watsonx_ai` SDK — `helper.py` uses raw `requests`, keep it consistent
-- Don't trust `difficulty` from the request body — always read it from the session dict
+- Don't reimplement the watsonx call — `backend/helper.py` handles auth and HTTP, use `call_granite()` from `ai/client.py`
+- Don't install `ibm_watsonx_ai` SDK — raw `requests` in helper.py, keep it consistent
+- Don't trust `difficulty` from request bodies — always read from `session["difficulty"]`
+- Don't translate content after generation — all content must be generated natively in the target language
+- Don't add emojis to the frontend — use SVG components from `Icons.jsx`
+- Don't add new question types without updating: `DIFFICULTY_QUESTION_TYPES` (difficulty.py), `get_question_type_instruction` + `parse_question_response` (question_types.py), and `QuestionCard.jsx`

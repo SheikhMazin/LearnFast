@@ -26,8 +26,8 @@ function Ordering({ question, items, onSubmit }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-white text-base leading-snug font-medium">{question}</p>
-      <p className="text-xs text-gray-600">Drag the steps into the correct order</p>
+      <p className="text-base leading-snug font-medium" style={{ color: "var(--ink)" }}>{question}</p>
+      <p className="text-xs" style={{ color: "var(--ink-muted)" }}>Drag the steps into the correct order</p>
 
       <div className="flex flex-col gap-2">
         {order.map((item, idx) => (
@@ -38,27 +38,27 @@ function Ordering({ question, items, onSubmit }) {
             onDragOver={(e) => onDragOver(e, idx)}
             onDrop={() => onDrop(idx)}
             onDragEnd={onDragEnd}
-            className={`flex items-center gap-3 px-3 py-3 rounded-xl border cursor-grab active:cursor-grabbing select-none transition-all ${
-              dragOver === idx
-                ? "border-blue-500 bg-blue-900/20"
-                : dragging === idx
-                ? "border-gray-600 opacity-40"
-                : "border-gray-700/80 bg-[#0f1117] hover:border-gray-600"
-            }`}
+            className="flex items-center gap-3 px-3 py-3 cursor-grab active:cursor-grabbing select-none transition-all"
+            style={{
+              background: dragOver === idx ? "#eef5e8" : dragging === idx ? "var(--card-2)" : "var(--card)",
+              border: dragOver === idx ? "1.5px solid var(--green)" : "1.5px solid var(--card-border)",
+              borderRadius: "4px 10px 8px 4px / 5px 4px 10px 5px",
+              opacity: dragging === idx ? 0.45 : 1,
+            }}
           >
-            <span className="text-gray-700 text-sm select-none">⠿</span>
-            <span className="w-6 h-6 rounded-md bg-gray-800 border border-gray-700 text-gray-400 text-xs flex items-center justify-center flex-shrink-0 font-bold">
+            <span className="text-sm select-none" style={{ color: "var(--card-border)", letterSpacing: "0.05em" }}>&#8942;&#8942;</span>
+            <span
+              className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold flex-shrink-0"
+              style={{ background: "var(--card-2)", border: "1px solid var(--card-border)", color: "var(--ink-muted)" }}
+            >
               {idx + 1}
             </span>
-            <span className="text-sm text-gray-300">{item.text}</span>
+            <span className="text-sm" style={{ color: "var(--ink)" }}>{item.text}</span>
           </div>
         ))}
       </div>
 
-      <button
-        onClick={handleSubmit}
-        className="w-full py-3 rounded-xl border border-gray-600 text-white font-medium hover:bg-white hover:text-black transition-all text-sm"
-      >
+      <button onClick={handleSubmit} className="btn-primary w-full py-3 text-sm">
         Submit order
       </button>
     </div>

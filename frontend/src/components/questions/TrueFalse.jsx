@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { CheckIcon, XIcon } from "../Icons";
 
 function TrueFalse({ question, onSubmit }) {
   const [selected, setSelected] = useState(null);
@@ -9,36 +10,40 @@ function TrueFalse({ question, onSubmit }) {
     setTimeout(() => onSubmit(val), 350);
   };
 
+  const btnStyle = (val) => {
+    if (val === "True") {
+      if (selected === "True") return { background: "#dff0d4", border: "2px solid var(--success)", color: "var(--success)" };
+      if (selected) return { background: "var(--card-2)", border: "1.5px solid var(--card-line)", color: "var(--ink-muted)", opacity: 0.5 };
+      return { background: "var(--card)", border: "1.5px solid var(--card-border)", color: "var(--ink)" };
+    } else {
+      if (selected === "False") return { background: "#f0dede", border: "2px solid var(--error)", color: "var(--error)" };
+      if (selected) return { background: "var(--card-2)", border: "1.5px solid var(--card-line)", color: "var(--ink-muted)", opacity: 0.5 };
+      return { background: "var(--card)", border: "1.5px solid var(--card-border)", color: "var(--ink)" };
+    }
+  };
+
   return (
     <div className="flex flex-col gap-6">
-      <p className="text-white text-base leading-snug font-medium">{question}</p>
+      <p className="text-base leading-snug font-medium" style={{ color: "var(--ink)" }}>{question}</p>
 
       <div className="grid grid-cols-2 gap-3">
         <button
           onClick={() => pick("True")}
           disabled={!!selected}
-          className={`py-8 rounded-xl border text-xl font-bold transition-all ${
-            selected === "True"
-              ? "border-emerald-500 bg-emerald-900/40 text-emerald-400"
-              : selected
-              ? "border-gray-800 bg-[#0f1117] text-gray-700 cursor-not-allowed"
-              : "border-gray-700 bg-[#0f1117] text-gray-300 hover:border-emerald-600 hover:bg-emerald-900/20 hover:text-emerald-400"
-          }`}
+          className="py-8 text-xl font-bold transition-all flex flex-col items-center gap-2"
+          style={{ ...btnStyle("True"), borderRadius: "4px 12px 8px 4px / 6px 4px 12px 6px", cursor: selected ? "not-allowed" : "pointer" }}
         >
-          ✓ True
+          <CheckIcon className="w-6 h-6" />
+          True
         </button>
         <button
           onClick={() => pick("False")}
           disabled={!!selected}
-          className={`py-8 rounded-xl border text-xl font-bold transition-all ${
-            selected === "False"
-              ? "border-rose-500 bg-rose-900/40 text-rose-400"
-              : selected
-              ? "border-gray-800 bg-[#0f1117] text-gray-700 cursor-not-allowed"
-              : "border-gray-700 bg-[#0f1117] text-gray-300 hover:border-rose-600 hover:bg-rose-900/20 hover:text-rose-400"
-          }`}
+          className="py-8 text-xl font-bold transition-all flex flex-col items-center gap-2"
+          style={{ ...btnStyle("False"), borderRadius: "4px 12px 8px 4px / 6px 4px 12px 6px", cursor: selected ? "not-allowed" : "pointer" }}
         >
-          ✗ False
+          <XIcon className="w-6 h-6" />
+          False
         </button>
       </div>
     </div>
