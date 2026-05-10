@@ -1,6 +1,6 @@
-from backend.ai.client import call_granite
-from backend.ai.prompts import get_system_prompt, build_lesson_prompt, build_challenge_prompt, build_feedback_prompt
-from backend.ai.question_types import parse_question_response
+from ai.client import call_granite
+from ai.prompts import get_system_prompt, build_lesson_prompt, build_challenge_prompt, build_feedback_prompt
+from ai.question_types import parse_question_response
 
 
 def generate_lesson(topic: str, language: str, difficulty: int) -> dict:
@@ -19,7 +19,7 @@ def generate_lesson(topic: str, language: str, difficulty: int) -> dict:
     
     system_prompt = get_system_prompt(language)
     
-    user_prompt = build_lesson_prompt(topics, language, difficulty)
+    user_prompt = build_lesson_prompt(topic, language, difficulty)
     
     raw_test = call_granite(system_prompt, user_prompt)
     

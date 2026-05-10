@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, timezone
-from difficulty import adjust_difficulty, calculate_confidence_score
+from core.difficulty import adjust_difficulty, calculate_confidence_score
 
 
 def _now_iso() -> str:

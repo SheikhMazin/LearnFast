@@ -40,7 +40,7 @@ def build_lesson_prompt(topic: str, language: str, difficulty: int) -> str:
     difficulty = DIFFICULTY_LABELS.get(difficulty, DIFFICULTY_LABELS.get(3))
     
     return (
-      f"Write a {difficulty_label}-level lesson explaining '{topic}' in {language}. "
+      f"Write a {difficulty}-level lesson explaining '{topic}' in {language}. "
       f"Keep it under 80 words. "
       f"End with exactly one sentence that leads naturally into a question, like 'Now let's test what you just learned.' "
       f"Write entirely in {language}."
@@ -55,8 +55,8 @@ def build_challenge_prompt(
     difficulty: int,
     question_type: str,
 ) -> str:
+    from ai.question_types import get_question_type_instruction
     
-    from question_types.py import get_question_type_instruction
     
     difficulty = DIFFICULTY_LABELS.get(difficulty, DIFFICULTY_LABELS.get(3))
     language = SUPPORTED_LANGUAGES.get(language, language)
@@ -65,8 +65,8 @@ def build_challenge_prompt(
     
     return (
       f"Based on this lesson: '{lesson_context[:200]}...' "
-      f"Write ONE {difficulty_label}-level question about'{topic}'. "
-      f"{format_instruction} "
+      f"Write ONE {difficulty}-level question about'{topic}'. "
+      f"{format_instruct} "
       f"Write entirely in {language}."
   )
     pass
