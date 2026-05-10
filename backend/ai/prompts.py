@@ -32,14 +32,16 @@ def get_system_prompt(language: str) -> str:
     )
 
 
-def build_curriculum_prompt(topic: str) -> str:
+def build_curriculum_prompt(topic: str, language: str = "English") -> str:
+    lang = SUPPORTED_LANGUAGES.get(language, language)
     return (
         f"Create a learning curriculum for the topic '{topic}'. "
         f"Break it into 6 to 8 progressive concept nodes that build on each other, from foundational to complex. "
+        f"IMPORTANT: Every 'concept' value MUST be written in {lang}. Do NOT use English. "
         f"Return ONLY a valid JSON array — no markdown, no explanation, no extra text before or after. "
         f"Each object must have exactly these fields: "
         f'"id" (integer starting at 0), '
-        f'"concept" (string, max 8 words in English), '
+        f'"concept" (short phrase in {lang}, max 8 words), '
         f'"prerequisite" (the integer id this concept directly builds on, or null for the root). '
         f"Example of the required format: "
         f'[{{"id":0,"concept":"What light does for plants","prerequisite":null}},'

@@ -176,6 +176,9 @@ body {
 }
 .paper-textarea:focus { border-color: var(--green); }
 
+/* ── RTL directional icon flip ─────────────────────────── */
+[dir="rtl"] .icon-dir { transform: scaleX(-1); }
+
 /* ── Scrollbar ─────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }

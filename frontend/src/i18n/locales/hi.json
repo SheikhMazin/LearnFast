@@ -1,0 +1,122 @@
+{
+  "login": {
+    "subtitle": "सीखना जारी रखने के लिए साइन इन करें",
+    "email": "ईमेल",
+    "password": "पासवर्ड",
+    "submit": "साइन इन करें",
+    "submitting": "साइन इन हो रहा है...",
+    "error": "अमान्य ईमेल या पासवर्ड",
+    "noAccount": "खाता नहीं है?",
+    "signUp": "साइन अप करें"
+  },
+  "signup": {
+    "subtitle": "अपना खाता बनाएं",
+    "email": "ईमेल",
+    "password": "पासवर्ड",
+    "confirmPassword": "पासवर्ड की पुष्टि करें",
+    "submit": "खाता बनाएं",
+    "submitting": "खाता बनाया जा रहा है...",
+    "error": "साइनअप विफल। ईमेल पहले से उपयोग में हो सकता है।",
+    "hasAccount": "पहले से खाता है?",
+    "signIn": "साइन इन करें",
+    "emailRequired": "ईमेल आवश्यक है",
+    "passwordRequired": "पासवर्ड आवश्यक है",
+    "passwordLength": "पासवर्ड कम से कम 6 अक्षरों का होना चाहिए",
+    "passwordMatch": "पासवर्ड मेल नहीं खाते"
+  },
+  "home": {
+    "headline": "आज आप क्या सीखना चाहते हैं?",
+    "subtext": "आपकी भाषा में AI-जनित पाठ, वास्तविक समय में आपके स्तर के अनुरूप।",
+    "topicLabel": "विषय",
+    "topicPlaceholder": "उदा. प्रकाश संश्लेषण, द्वितीय विश्व युद्ध, बुनियादी बीजगणित...",
+    "languageLabel": "भाषा",
+    "startButton": "सीखना शुरू करें",
+    "topicError": "कृपया पहले एक विषय दर्ज करें",
+    "logout": "लॉगआउट"
+  },
+  "sidebar": {
+    "pastCurriculums": "पिछले पाठ्यक्रम",
+    "noSessions": "अभी तक कोई पिछला सत्र नहीं।",
+    "startPrompt": "कुछ सीखना शुरू करें!",
+    "sessions_one": "{{count}} सत्र",
+    "sessions_other": "{{count}} सत्र"
+  },
+  "hud": {
+    "logout": "लॉगआउट",
+    "accuracy": "% सटीकता",
+    "difficulty": {
+      "1": "शुरुआती",
+      "2": "प्रारंभिक",
+      "3": "मध्यवर्ती",
+      "4": "उन्नत",
+      "5": "विशेषज्ञ"
+    }
+  },
+  "cards": {
+    "historyBanner": "पिछला कार्ड देख रहे हैं — आगे बढ़ें जारी रखने के लिए",
+    "loadingNext": "अगला कार्ड लोड हो रहा है...",
+    "loading": "लोड हो रहा है...",
+    "askQuestion": "भ्रमित हैं? एक प्रश्न पूछें"
+  },
+  "loading": {
+    "building": "आपका पाठ्यक्रम बनाया जा रहा है",
+    "buildingSubtext": "इस विषय पर व्यक्तिगत पाठ तैयार किया जा रहा है",
+    "resuming": "आपका सत्र फिर से शुरू हो रहा है",
+    "resumingSubtext": "इस विषय पर आपका पिछला कार्य लोड हो रहा है"
+  },
+  "curriculum": {
+    "title": "पाठ्यक्रम",
+    "progress": "{{done}} / {{total}} पूर्ण"
+  },
+  "flashcard": {
+    "tapReveal": "प्रकट करने के लिए टैप करें",
+    "explanation": "स्पष्टीकरण",
+    "gotIt": "समझ गया"
+  },
+  "lesson": {
+    "label": "पाठ",
+    "challenge": "चुनौती के लिए तैयार"
+  },
+  "question": {
+    "alreadyAnswered": "उत्तर पहले ही दिया जा चुका है — जारी रखने के लिए आगे बढ़ें।",
+    "submitAnswer": "उत्तर जमा करें",
+    "placeholder": "आपका उत्तर...",
+    "textareaPlaceholder": "यहाँ अपना उत्तर लिखें...",
+    "dragInstruction": "चरणों को सही क्रम में खींचें",
+    "submitOrder": "क्रम जमा करें"
+  },
+  "feedback": {
+    "correct": "सही!",
+    "incorrect": "बिल्कुल नहीं",
+    "yourAnswer": "आपका उत्तर",
+    "correctAnswer": "सही उत्तर",
+    "aiFeedback": "AI प्रतिक्रिया",
+    "nextConcept": "अगली अवधारणा",
+    "nextQuestion": "अगला प्रश्न",
+    "movingOn": "आगे बढ़ते हैं: {{concept}}",
+    "greatNext": "शानदार — अगली अवधारणा!",
+    "revisit": "चलिए दोहराते हैं: {{concept}}",
+    "stepBack": "चलिए एक कदम पीछे जाएं और नींव को दोहराएं।",
+    "curriculumDone": "आपने पूरा पाठ्यक्रम पूरा कर लिया!"
+  },
+  "qa": {
+    "header": "एक प्रश्न पूछें",
+    "about": "विषय: {{topic}}",
+    "empty": "इस विषय के बारे में कुछ भी पूछें।",
+    "you": "आप",
+    "thinking": "सोच रहा है...",
+    "placeholder": "कुछ भी पूछें...",
+    "send": "भेजें"
+  },
+  "completion": {
+    "title": "पाठ्यक्रम पूर्ण!",
+    "subtitle": "आपने {{language}} में {{topic}} में महारत हासिल की",
+    "questions": "प्रश्न",
+    "accuracy": "सटीकता",
+    "bestStreak": "सर्वश्रेष्ठ लकीर",
+    "finalLevel": "अंतिम स्तर",
+    "avgTime": "औसत समय",
+    "correct": "सही",
+    "newTopic": "नया विषय शुरू करें"
+  }
+}

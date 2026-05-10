@@ -1,0 +1,122 @@
+{
+  "login": {
+    "subtitle": "Ingia ili kuendelea kujifunza",
+    "email": "Barua pepe",
+    "password": "Nywila",
+    "submit": "Ingia",
+    "submitting": "Inaingia...",
+    "error": "Barua pepe au nywila si sahihi",
+    "noAccount": "Huna akaunti?",
+    "signUp": "Jisajili"
+  },
+  "signup": {
+    "subtitle": "Fungua akaunti yako",
+    "email": "Barua pepe",
+    "password": "Nywila",
+    "confirmPassword": "Thibitisha nywila",
+    "submit": "Fungua akaunti",
+    "submitting": "Inafungua akaunti...",
+    "error": "Usajili umeshindwa. Barua pepe inaweza kuwa inatumika tayari.",
+    "hasAccount": "Una akaunti tayari?",
+    "signIn": "Ingia",
+    "emailRequired": "Barua pepe inahitajika",
+    "passwordRequired": "Nywila inahitajika",
+    "passwordLength": "Nywila lazima iwe na angalau herufi 6",
+    "passwordMatch": "Nywila hazilingani"
+  },
+  "home": {
+    "headline": "Unataka kujifunza nini leo?",
+    "subtext": "Masomo yaliyotengenezwa na AI katika lugha yako, yanayolingana na kiwango chako wakati wa kweli.",
+    "topicLabel": "Mada",
+    "topicPlaceholder": "Mfano: Usanisinuru, Vita vya Pili vya Dunia, Aljebra ya Msingi...",
+    "languageLabel": "Lugha",
+    "startButton": "Anza Kujifunza",
+    "topicError": "Tafadhali weka mada kwanza",
+    "logout": "Toka"
+  },
+  "sidebar": {
+    "pastCurriculums": "Mitaala ya Awali",
+    "noSessions": "Hakuna vikao vya awali bado.",
+    "startPrompt": "Anza kujifunza kitu!",
+    "sessions_one": "Kikao {{count}}",
+    "sessions_other": "Vikao {{count}}"
+  },
+  "hud": {
+    "logout": "Toka",
+    "accuracy": "% usahihi",
+    "difficulty": {
+      "1": "Mwanzo",
+      "2": "Msingi",
+      "3": "Kati",
+      "4": "Juu",
+      "5": "Mtaalamu"
+    }
+  },
+  "cards": {
+    "historyBanner": "Unaangalia kadi ya awali — endelea mbele kuendelea",
+    "loadingNext": "Inapakia kadi inayofuata...",
+    "loading": "Inapakia...",
+    "askQuestion": "Umechanganyikiwa? Uliza swali"
+  },
+  "loading": {
+    "building": "Inajenga mtaala wako",
+    "buildingSubtext": "Inaunda somo maalum kuhusu",
+    "resuming": "Inaendelea na kikao chako",
+    "resumingSubtext": "Inapakia kazi yako ya awali kuhusu"
+  },
+  "curriculum": {
+    "title": "Mtaala",
+    "progress": "{{done}} / {{total}} imekamilika"
+  },
+  "flashcard": {
+    "tapReveal": "Gonga kuonyesha",
+    "explanation": "Maelezo",
+    "gotIt": "Nimeelewa"
+  },
+  "lesson": {
+    "label": "Somo",
+    "challenge": "Tayari kwa changamoto"
+  },
+  "question": {
+    "alreadyAnswered": "Jibu limetumwa — endelea mbele kuendelea.",
+    "submitAnswer": "Tuma jibu",
+    "placeholder": "Jibu lako...",
+    "textareaPlaceholder": "Andika jibu lako hapa...",
+    "dragInstruction": "Buruta hatua kwenye mpangilio sahihi",
+    "submitOrder": "Tuma mpangilio"
+  },
+  "feedback": {
+    "correct": "Sahihi!",
+    "incorrect": "Si kabisa",
+    "yourAnswer": "Jibu lako",
+    "correctAnswer": "Jibu sahihi",
+    "aiFeedback": "Maoni ya AI",
+    "nextConcept": "Dhana inayofuata",
+    "nextQuestion": "Swali linalofuata",
+    "movingOn": "Tunaendelea na: {{concept}}",
+    "greatNext": "Vizuri — dhana inayofuata!",
+    "revisit": "Hebu turejee: {{concept}}",
+    "stepBack": "Hebu turudi nyuma na kurejea msingi.",
+    "curriculumDone": "Umekamilisha mtaala wote!"
+  },
+  "qa": {
+    "header": "Uliza swali",
+    "about": "Kuhusu: {{topic}}",
+    "empty": "Uliza chochote kuhusu mada hii.",
+    "you": "Wewe",
+    "thinking": "Inafikiria...",
+    "placeholder": "Uliza chochote...",
+    "send": "Tuma"
+  },
+  "completion": {
+    "title": "Mtaala Umekamilika!",
+    "subtitle": "Umejifunza {{topic}} kwa {{language}}",
+    "questions": "Maswali",
+    "accuracy": "Usahihi",
+    "bestStreak": "Mlolongo bora",
+    "finalLevel": "Kiwango cha mwisho",
+    "avgTime": "Wakati wa wastani",
+    "correct": "Sahihi",
+    "newTopic": "Anza mada mpya"
+  }
+}

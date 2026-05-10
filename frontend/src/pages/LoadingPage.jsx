@@ -1,4 +1,7 @@
+import { useTranslation } from "react-i18next";
+
 function LoadingPage({ topic, isResume }) {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-6" style={{ background: "var(--bg)" }}>
       <div className="relative w-16 h-16">
@@ -10,20 +13,11 @@ function LoadingPage({ topic, isResume }) {
       </div>
       <div className="text-center">
         <h2 className="font-title text-3xl mb-2" style={{ color: "var(--text)" }}>
-          {isResume ? "Resuming your session" : "Building your curriculum"}
+          {isResume ? t("loading.resuming") : t("loading.building")}
         </h2>
         <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-          {isResume ? (
-            <>
-              Loading your previous work on{" "}
-              <span className="font-semibold" style={{ color: "var(--green-light)" }}>{topic}</span>...
-            </>
-          ) : (
-            <>
-              Generating a personalised lesson on{" "}
-              <span className="font-semibold" style={{ color: "var(--green-light)" }}>{topic}</span>...
-            </>
-          )}
+          {isResume ? t("loading.resumingSubtext") : t("loading.buildingSubtext")}{" "}
+          <span className="font-semibold" style={{ color: "var(--green-light)" }}>{topic}</span>...
         </p>
       </div>
       <div className="flex gap-1.5 mt-2">

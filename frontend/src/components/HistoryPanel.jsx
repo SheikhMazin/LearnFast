@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { ChevronLeftIcon, ChevronRightIcon } from "./Icons";
 
@@ -14,6 +15,7 @@ function relativeDate(isoString) {
 }
 
 function HistoryPanel({ onResume, onHome }) {
+  const { t } = useTranslation();
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [collapsed, setCollapsed] = useState(false);
@@ -76,13 +78,13 @@ function HistoryPanel({ onResume, onHome }) {
         }}
         title={collapsed ? "Expand panel" : "Collapse panel"}
       >
-        {collapsed ? <ChevronRightIcon className="w-3.5 h-3.5" /> : <ChevronLeftIcon className="w-3.5 h-3.5" />}
+        {collapsed ? <ChevronRightIcon className="w-3.5 h-3.5 icon-dir" /> : <ChevronLeftIcon className="w-3.5 h-3.5 icon-dir" />}
       </button>
 
       {!collapsed && (
         <>
           <p className="text-xs uppercase tracking-widest mb-5" style={{ color: "var(--text-dim)" }}>
-            Past Curriculums
+            {t("sidebar.pastCurriculums")}
           </p>
 
           <div className="flex flex-col gap-1.5 overflow-y-auto flex-1">
@@ -97,8 +99,8 @@ function HistoryPanel({ onResume, onHome }) {
 
             {!loading && sessions.length === 0 && (
               <p className="text-xs text-center pt-6 leading-relaxed" style={{ color: "var(--text-dim)" }}>
-                No previous sessions yet.
-                <br />Start learning something!
+                {t("sidebar.noSessions")}
+                <br />{t("sidebar.startPrompt")}
               </p>
             )}
 
@@ -134,7 +136,7 @@ function HistoryPanel({ onResume, onHome }) {
           {!loading && sessions.length > 0 && (
             <div className="pt-4 mt-auto" style={{ borderTop: "1px solid var(--border)" }}>
               <p className="text-xs" style={{ color: "var(--text-dim)" }}>
-                {sessions.length} session{sessions.length !== 1 ? "s" : ""}
+                {t("sidebar.sessions", { count: sessions.length })}
               </p>
             </div>
           )}

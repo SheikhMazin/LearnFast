@@ -1,6 +1,5 @@
+import { useTranslation } from "react-i18next";
 import { StarIcon, FlameIcon } from "../components/Icons";
-
-const DIFF_LABEL = { 1: "Beginner", 2: "Elementary", 3: "Intermediate", 4: "Advanced", 5: "Expert" };
 
 function StatBox({ label, value, icon }) {
   return (
@@ -15,8 +14,10 @@ function StatBox({ label, value, icon }) {
 }
 
 function CompletionPage({ stats, onNewTopic }) {
+  const { t } = useTranslation();
   const s = stats || {};
   const accuracy = Math.round((s.accuracy || 0) * 100);
+  const diffLabel = t(`hud.difficulty.${s.current_difficulty}`, { defaultValue: `Lvl ${s.current_difficulty}` });
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6" style={{ background: "var(--bg)" }}>
@@ -25,31 +26,26 @@ function CompletionPage({ stats, onNewTopic }) {
         <StarIcon className="w-10 h-10" />
         <StarIcon className="w-8 h-8" />
       </div>
-      <h1 className="font-title text-4xl mb-2" style={{ color: "var(--text)" }}>Curriculum Complete!</h1>
+      <h1 className="font-title text-4xl mb-2" style={{ color: "var(--text)" }}>{t("completion.title")}</h1>
       <p className="mb-10 text-base" style={{ color: "var(--text-muted)" }}>
-        You mastered{" "}
-        <span className="font-semibold" style={{ color: "var(--green-light)" }}>{s.topic}</span>{" "}
-        in {s.language}
+        {t("completion.subtitle", { topic: s.topic, language: s.language })}
       </p>
 
       <div className="w-full max-w-md grid grid-cols-2 gap-4 mb-8">
-        <StatBox label="Questions" value={s.questions_answered ?? "—"} />
-        <StatBox label="Accuracy" value={`${accuracy}%`} />
+        <StatBox label={t("completion.questions")} value={s.questions_answered ?? "—"} />
+        <StatBox label={t("completion.accuracy")} value={`${accuracy}%`} />
         <StatBox
-          label="Best Streak"
+          label={t("completion.bestStreak")}
           value={s.current_streak ?? 0}
           icon={<FlameIcon className="w-4 h-4" style={{ color: "var(--warning)" }} />}
         />
-        <StatBox label="Final Level" value={DIFF_LABEL[s.current_difficulty] ?? s.current_difficulty ?? "—"} />
-        <StatBox label="Avg Time" value={`${(s.avg_time_seconds || 0).toFixed(1)}s`} />
-        <StatBox label="Correct" value={`${s.total_correct ?? 0} / ${s.questions_answered ?? 0}`} />
+        <StatBox label={t("completion.finalLevel")} value={diffLabel} />
+        <StatBox label={t("completion.avgTime")} value={`${(s.avg_time_seconds || 0).toFixed(1)}s`} />
+        <StatBox label={t("completion.correct")} value={`${s.total_correct ?? 0} / ${s.questions_answered ?? 0}`} />
       </div>
 
-      <button
-        onClick={onNewTopic}
-        className="btn-primary w-full max-w-md py-3.5 text-base font-semibold"
-      >
-        Start a New Topic
+      <button onClick={onNewTopic} className="btn-primary w-full max-w-md py-3.5 text-base font-semibold">
+        {t("completion.newTopic")}
       </button>
     </div>
   );

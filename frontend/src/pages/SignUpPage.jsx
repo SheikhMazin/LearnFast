@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 function SignUpPage({ onSignUp, onGoToLogin }) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -10,10 +12,10 @@ function SignUpPage({ onSignUp, onGoToLogin }) {
 
   const validate = () => {
     const e = {};
-    if (!email.trim()) e.email = "Email is required";
-    if (!password.trim()) e.password = "Password is required";
-    else if (password.length < 6) e.password = "Password must be at least 6 characters";
-    if (confirm !== password) e.confirm = "Passwords do not match";
+    if (!email.trim()) e.email = t("signup.emailRequired");
+    if (!password.trim()) e.password = t("signup.passwordRequired");
+    else if (password.length < 6) e.password = t("signup.passwordLength");
+    if (confirm !== password) e.confirm = t("signup.passwordMatch");
     return e;
   };
 
@@ -23,7 +25,7 @@ function SignUpPage({ onSignUp, onGoToLogin }) {
     setLoading(true);
     setServerError("");
     const ok = await onSignUp(email, password);
-    if (!ok) setServerError("Signup failed. Email may already be in use.");
+    if (!ok) setServerError(t("signup.error"));
     setLoading(false);
   };
 
@@ -50,7 +52,7 @@ function SignUpPage({ onSignUp, onGoToLogin }) {
             Vernā
           </h1>
           <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-            Create your account
+            {t("signup.subtitle")}
           </p>
         </div>
 
@@ -65,67 +67,40 @@ function SignUpPage({ onSignUp, onGoToLogin }) {
           <div className="space-y-5">
             <div>
               <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: "var(--ink-muted)" }}>
-                Email
+                {t("signup.email")}
               </label>
-              <input
-                type="email"
-                value={email}
-                onChange={setField("email")}
-                onKeyDown={(e) => e.key === "Enter" && handleSignUp()}
-                className="w-full px-3 py-2.5 rounded text-sm"
-                style={inputStyle(errors.email)}
-                autoFocus
-              />
+              <input type="email" value={email} onChange={setField("email")} onKeyDown={(e) => e.key === "Enter" && handleSignUp()}
+                className="w-full px-3 py-2.5 rounded text-sm" style={inputStyle(errors.email)} autoFocus />
               {errors.email && <p className="text-xs mt-1" style={{ color: "var(--error)" }}>{errors.email}</p>}
             </div>
 
             <div>
               <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: "var(--ink-muted)" }}>
-                Password
+                {t("signup.password")}
               </label>
-              <input
-                type="password"
-                value={password}
-                onChange={setField("password")}
-                onKeyDown={(e) => e.key === "Enter" && handleSignUp()}
-                className="w-full px-3 py-2.5 rounded text-sm"
-                style={inputStyle(errors.password)}
-              />
+              <input type="password" value={password} onChange={setField("password")} onKeyDown={(e) => e.key === "Enter" && handleSignUp()}
+                className="w-full px-3 py-2.5 rounded text-sm" style={inputStyle(errors.password)} />
               {errors.password && <p className="text-xs mt-1" style={{ color: "var(--error)" }}>{errors.password}</p>}
             </div>
 
             <div>
               <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: "var(--ink-muted)" }}>
-                Confirm password
+                {t("signup.confirmPassword")}
               </label>
-              <input
-                type="password"
-                value={confirm}
-                onChange={setField("confirm")}
-                onKeyDown={(e) => e.key === "Enter" && handleSignUp()}
-                className="w-full px-3 py-2.5 rounded text-sm"
-                style={inputStyle(errors.confirm)}
-              />
+              <input type="password" value={confirm} onChange={setField("confirm")} onKeyDown={(e) => e.key === "Enter" && handleSignUp()}
+                className="w-full px-3 py-2.5 rounded text-sm" style={inputStyle(errors.confirm)} />
               {errors.confirm && <p className="text-xs mt-1" style={{ color: "var(--error)" }}>{errors.confirm}</p>}
             </div>
 
-            <button
-              onClick={handleSignUp}
-              disabled={loading}
-              className="btn-primary w-full py-3 text-sm mt-2"
-            >
-              {loading ? "Creating account..." : "Create account"}
+            <button onClick={handleSignUp} disabled={loading} className="btn-primary w-full py-3 text-sm mt-2">
+              {loading ? t("signup.submitting") : t("signup.submit")}
             </button>
           </div>
 
           <p className="text-center text-xs mt-6" style={{ color: "var(--ink-muted)" }}>
-            Already have an account?{" "}
-            <span
-              onClick={onGoToLogin}
-              className="cursor-pointer font-semibold hover:underline"
-              style={{ color: "var(--green)" }}
-            >
-              Sign in
+            {t("signup.hasAccount")}{" "}
+            <span onClick={onGoToLogin} className="cursor-pointer font-semibold hover:underline" style={{ color: "var(--green)" }}>
+              {t("signup.signIn")}
             </span>
           </p>
         </div>

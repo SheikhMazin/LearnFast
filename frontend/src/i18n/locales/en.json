@@ -1,0 +1,122 @@
+{
+  "login": {
+    "subtitle": "Sign in to continue learning",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "submitting": "Signing in...",
+    "error": "Invalid email or password",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up"
+  },
+  "signup": {
+    "subtitle": "Create your account",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "submit": "Create account",
+    "submitting": "Creating account...",
+    "error": "Signup failed. Email may already be in use.",
+    "hasAccount": "Already have an account?",
+    "signIn": "Sign in",
+    "emailRequired": "Email is required",
+    "passwordRequired": "Password is required",
+    "passwordLength": "Password must be at least 6 characters",
+    "passwordMatch": "Passwords do not match"
+  },
+  "home": {
+    "headline": "What do you want to learn today?",
+    "subtext": "AI-generated lessons in your language, adapting to your level in real time.",
+    "topicLabel": "Topic",
+    "topicPlaceholder": "e.g. Photosynthesis, World War II, Basic Algebra...",
+    "languageLabel": "Language",
+    "startButton": "Start Learning",
+    "topicError": "Please enter a topic first",
+    "logout": "Logout"
+  },
+  "sidebar": {
+    "pastCurriculums": "Past Curriculums",
+    "noSessions": "No previous sessions yet.",
+    "startPrompt": "Start learning something!",
+    "sessions_one": "{{count}} session",
+    "sessions_other": "{{count}} sessions"
+  },
+  "hud": {
+    "logout": "Logout",
+    "accuracy": "% acc",
+    "difficulty": {
+      "1": "Beginner",
+      "2": "Elementary",
+      "3": "Intermediate",
+      "4": "Advanced",
+      "5": "Expert"
+    }
+  },
+  "cards": {
+    "historyBanner": "Viewing previous card — navigate forward to resume",
+    "loadingNext": "Loading next card...",
+    "loading": "Loading...",
+    "askQuestion": "Confused? Ask a question"
+  },
+  "loading": {
+    "building": "Building your curriculum",
+    "buildingSubtext": "Generating a personalised lesson on",
+    "resuming": "Resuming your session",
+    "resumingSubtext": "Loading your previous work on"
+  },
+  "curriculum": {
+    "title": "Curriculum",
+    "progress": "{{done}} / {{total}} complete"
+  },
+  "flashcard": {
+    "tapReveal": "Tap to reveal",
+    "explanation": "Explanation",
+    "gotIt": "Got it"
+  },
+  "lesson": {
+    "label": "Lesson",
+    "challenge": "Ready for a challenge"
+  },
+  "question": {
+    "alreadyAnswered": "Answer already submitted — navigate forward to resume.",
+    "submitAnswer": "Submit answer",
+    "placeholder": "Your answer...",
+    "textareaPlaceholder": "Write your answer here...",
+    "dragInstruction": "Drag the steps into the correct order",
+    "submitOrder": "Submit order"
+  },
+  "feedback": {
+    "correct": "Correct!",
+    "incorrect": "Not quite",
+    "yourAnswer": "Your answer",
+    "correctAnswer": "Correct answer",
+    "aiFeedback": "AI Feedback",
+    "nextConcept": "Next concept",
+    "nextQuestion": "Next question",
+    "movingOn": "Moving on to: {{concept}}",
+    "greatNext": "Great — next concept!",
+    "revisit": "Let's revisit: {{concept}}",
+    "stepBack": "Let's step back and revisit the foundation.",
+    "curriculumDone": "You've completed the entire curriculum!"
+  },
+  "qa": {
+    "header": "Ask a question",
+    "about": "About: {{topic}}",
+    "empty": "Ask anything about this topic.",
+    "you": "You",
+    "thinking": "Thinking...",
+    "placeholder": "Ask anything...",
+    "send": "Send"
+  },
+  "completion": {
+    "title": "Curriculum Complete!",
+    "subtitle": "You mastered {{topic}} in {{language}}",
+    "questions": "Questions",
+    "accuracy": "Accuracy",
+    "bestStreak": "Best Streak",
+    "finalLevel": "Final Level",
+    "avgTime": "Avg Time",
+    "correct": "Correct",
+    "newTopic": "Start a New Topic"
+  }
+}

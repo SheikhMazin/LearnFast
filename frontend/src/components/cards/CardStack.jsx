@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { ArrowLeftIcon, ArrowRightIcon, ChatIcon } from "../Icons";
 import CardFrame from "./CardFrame";
 import LessonCard from "./LessonCard";
@@ -27,6 +28,7 @@ function CardStack({
   onBack, onForward, onAnswer, onAskQuestion,
   stats,
 }) {
+  const { t } = useTranslation();
   const currentCard = cards[cardIdx] || null;
   const hasHistory = cardIdx > 0;
 
@@ -43,7 +45,7 @@ function CardStack({
             color: "var(--warning)",
           }}
         >
-          Viewing previous card — navigate forward to resume
+          {t("cards.historyBanner")}
         </div>
       )}
 
@@ -58,14 +60,8 @@ function CardStack({
       <div className="relative w-full" style={{ paddingBottom: "14px", paddingRight: "14px" }}>
         {hasHistory && (
           <>
-            <div
-              className="absolute inset-0 notebook-ghost"
-              style={{ transform: "translateY(10px) translateX(10px)", opacity: 0.3 }}
-            />
-            <div
-              className="absolute inset-0 notebook-ghost"
-              style={{ transform: "translateY(5px) translateX(5px)", opacity: 0.55 }}
-            />
+            <div className="absolute inset-0 notebook-ghost" style={{ transform: "translateY(10px) translateX(10px)", opacity: 0.3 }} />
+            <div className="absolute inset-0 notebook-ghost" style={{ transform: "translateY(5px) translateX(5px)", opacity: 0.55 }} />
           </>
         )}
 
@@ -88,9 +84,21 @@ function CardStack({
           onClick={onBack}
           disabled={!canGoBack}
           className="w-10 h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-20 disabled:cursor-not-allowed"
-          style={{ border: "1.5px solid var(--border-light)", color: "var(--text-muted)" }}
+          style={{ border: "1.5px solid var(--border-light)", color: "var(--text-muted)", background: "transparent" }}
+          onMouseEnter={(e) => {
+            if (!e.currentTarget.disabled) {
+              e.currentTarget.style.borderColor = "var(--green)";
+              e.currentTarget.style.color = "var(--green)";
+              e.currentTarget.style.background = "rgba(74,124,56,0.08)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = "var(--border-light)";
+            e.currentTarget.style.color = "var(--text-muted)";
+            e.currentTarget.style.background = "transparent";
+          }}
         >
-          <ArrowLeftIcon className="w-4 h-4" />
+          <ArrowLeftIcon className="w-4 h-4 icon-dir" />
         </button>
 
         <div className="flex gap-1.5">
@@ -111,9 +119,21 @@ function CardStack({
           onClick={onForward}
           disabled={!canGoForward || (currentCard?.type === "question" && !isInHistory)}
           className="w-10 h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-20 disabled:cursor-not-allowed"
-          style={{ border: "1.5px solid var(--border-light)", color: "var(--text-muted)" }}
+          style={{ border: "1.5px solid var(--border-light)", color: "var(--text-muted)", background: "transparent" }}
+          onMouseEnter={(e) => {
+            if (!e.currentTarget.disabled) {
+              e.currentTarget.style.borderColor = "var(--green)";
+              e.currentTarget.style.color = "var(--green)";
+              e.currentTarget.style.background = "rgba(74,124,56,0.08)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = "var(--border-light)";
+            e.currentTarget.style.color = "var(--text-muted)";
+            e.currentTarget.style.background = "transparent";
+          }}
         >
-          <ArrowRightIcon className="w-4 h-4" />
+          <ArrowRightIcon className="w-4 h-4 icon-dir" />
         </button>
       </div>
 
@@ -140,18 +160,15 @@ function CardStack({
           }}
         >
           <ChatIcon className="w-4 h-4" />
-          Confused? Ask a question
+          {t("cards.askQuestion")}
         </button>
       )}
 
       {/* Loading indicator */}
       {isLoading && currentCard && (
         <p className="text-xs mt-3 flex items-center gap-2" style={{ color: "var(--text-dim)" }}>
-          <span
-            className="w-3 h-3 rounded-full border-2 border-transparent animate-spin inline-block"
-            style={{ borderTopColor: "var(--green)" }}
-          />
-          Loading next card...
+          <span className="w-3 h-3 rounded-full border-2 border-transparent animate-spin inline-block" style={{ borderTopColor: "var(--green)" }} />
+          {t("cards.loadingNext")}
         </p>
       )}
     </div>

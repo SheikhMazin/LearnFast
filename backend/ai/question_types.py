@@ -15,7 +15,8 @@ def get_question_type_instruction(question_type: str) -> str:
             "ONLY the label 'ANSWER' must be in English; everything else follows the target language."
         ),
         "fill_blank": (
-            "Write one sentence with a key word or phrase replaced by ___. "
+            "Write ONE declarative statement — NOT a question — with EXACTLY ONE key word or phrase replaced by ___. "
+            "Example form: 'Mitochondria are the ___ of the cell.' Never phrase it as a question. Use exactly one ___. "
             "On a new line write: ANSWER (IN ENGLISH): [the missing word or phrase]. "
             "ONLY the label 'ANSWER' must be in English."
         ),

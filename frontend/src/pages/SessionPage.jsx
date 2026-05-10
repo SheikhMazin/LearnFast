@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { api, parseChallenge } from "../api/client";
 import { FlameIcon } from "../components/Icons";
 import CardStack from "../components/cards/CardStack";
@@ -6,9 +7,8 @@ import CurriculumMap from "../components/CurriculumMap";
 import HistoryPanel from "../components/HistoryPanel";
 import QADrawer from "../components/QADrawer";
 
-const DIFF_LABEL = { 1: "Beginner", 2: "Elementary", 3: "Intermediate", 4: "Advanced", 5: "Expert" };
-
 function SessionPage({ session, onComplete, onHome, onStart, logout }) {
+  const { t } = useTranslation();
   const { sessionId, topic, language } = session;
 
   const [cards, setCards] = useState([]);
@@ -239,10 +239,10 @@ function SessionPage({ session, onComplete, onHome, onStart, logout }) {
               {stats.streak}
             </span>
             <span style={{ color: "var(--text-muted)" }}>
-              {Math.round((stats.accuracy || 0) * 100)}% acc
+              {Math.round((stats.accuracy || 0) * 100)}{t("hud.accuracy")}
             </span>
             <span style={{ color: "var(--green-light)" }}>
-              {DIFF_LABEL[stats.difficulty] || `Lvl ${stats.difficulty}`}
+              {t(`hud.difficulty.${stats.difficulty}`, { defaultValue: `Lvl ${stats.difficulty}` })}
             </span>
             <button
               onClick={logout}
@@ -251,7 +251,7 @@ function SessionPage({ session, onComplete, onHome, onStart, logout }) {
               onMouseEnter={(e) => e.target.style.color = "var(--text-muted)"}
               onMouseLeave={(e) => e.target.style.color = "var(--text-dim)"}
             >
-              Logout
+              {t("hud.logout")}
             </button>
           </div>
         </header>
@@ -264,7 +264,7 @@ function SessionPage({ session, onComplete, onHome, onStart, logout }) {
                 className="w-10 h-10 rounded-full border-4 border-transparent animate-spin"
                 style={{ borderTopColor: "var(--green-light)" }}
               />
-              <p className="text-sm">Loading...</p>
+              <p className="text-sm">{t("cards.loading")}</p>
             </div>
           ) : (
             <div className="my-auto w-full">

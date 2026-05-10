@@ -1,0 +1,122 @@
+{
+  "login": {
+    "subtitle": "登录以继续学习",
+    "email": "电子邮件",
+    "password": "密码",
+    "submit": "登录",
+    "submitting": "登录中...",
+    "error": "电子邮件或密码无效",
+    "noAccount": "还没有账户？",
+    "signUp": "注册"
+  },
+  "signup": {
+    "subtitle": "创建您的账户",
+    "email": "电子邮件",
+    "password": "密码",
+    "confirmPassword": "确认密码",
+    "submit": "创建账户",
+    "submitting": "创建账户中...",
+    "error": "注册失败。此电子邮件可能已被使用。",
+    "hasAccount": "已有账户？",
+    "signIn": "登录",
+    "emailRequired": "电子邮件为必填项",
+    "passwordRequired": "密码为必填项",
+    "passwordLength": "密码至少需要6个字符",
+    "passwordMatch": "两次输入的密码不一致"
+  },
+  "home": {
+    "headline": "您今天想学什么？",
+    "subtext": "用您的语言生成AI课程，实时适应您的水平。",
+    "topicLabel": "主题",
+    "topicPlaceholder": "例如：光合作用、第二次世界大战、基础代数...",
+    "languageLabel": "语言",
+    "startButton": "开始学习",
+    "topicError": "请先输入主题",
+    "logout": "退出登录"
+  },
+  "sidebar": {
+    "pastCurriculums": "过往课程",
+    "noSessions": "还没有往期课程。",
+    "startPrompt": "开始学习吧！",
+    "sessions_one": "{{count}} 个课程",
+    "sessions_other": "{{count}} 个课程"
+  },
+  "hud": {
+    "logout": "退出登录",
+    "accuracy": "% 准确率",
+    "difficulty": {
+      "1": "初学者",
+      "2": "初级",
+      "3": "中级",
+      "4": "高级",
+      "5": "专家"
+    }
+  },
+  "cards": {
+    "historyBanner": "正在查看之前的卡片 — 向前导航以继续",
+    "loadingNext": "加载下一张卡片...",
+    "loading": "加载中...",
+    "askQuestion": "有疑问？提出问题"
+  },
+  "loading": {
+    "building": "正在构建您的课程",
+    "buildingSubtext": "正在生成关于以下主题的个性化课程",
+    "resuming": "正在恢复您的课程",
+    "resumingSubtext": "正在加载您之前关于以下主题的学习内容"
+  },
+  "curriculum": {
+    "title": "课程大纲",
+    "progress": "{{done}} / {{total}} 已完成"
+  },
+  "flashcard": {
+    "tapReveal": "点击揭晓",
+    "explanation": "解释",
+    "gotIt": "明白了"
+  },
+  "lesson": {
+    "label": "课程",
+    "challenge": "准备好接受挑战"
+  },
+  "question": {
+    "alreadyAnswered": "答案已提交 — 向前导航以继续。",
+    "submitAnswer": "提交答案",
+    "placeholder": "您的答案...",
+    "textareaPlaceholder": "在此处填写您的答案...",
+    "dragInstruction": "将步骤拖到正确的顺序",
+    "submitOrder": "提交顺序"
+  },
+  "feedback": {
+    "correct": "正确！",
+    "incorrect": "不太对",
+    "yourAnswer": "您的答案",
+    "correctAnswer": "正确答案",
+    "aiFeedback": "AI 反馈",
+    "nextConcept": "下一个概念",
+    "nextQuestion": "下一题",
+    "movingOn": "进入：{{concept}}",
+    "greatNext": "很好 — 下一个概念！",
+    "revisit": "让我们回顾：{{concept}}",
+    "stepBack": "让我们退一步，回顾一下基础。",
+    "curriculumDone": "您已完成整个课程！"
+  },
+  "qa": {
+    "header": "提问",
+    "about": "关于：{{topic}}",
+    "empty": "随时提问关于此主题的问题。",
+    "you": "您",
+    "thinking": "思考中...",
+    "placeholder": "随便问什么...",
+    "send": "发送"
+  },
+  "completion": {
+    "title": "课程完成！",
+    "subtitle": "您已用{{language}}掌握了{{topic}}",
+    "questions": "题目数",
+    "accuracy": "准确率",
+    "bestStreak": "最高连胜",
+    "finalLevel": "最终等级",
+    "avgTime": "平均用时",
+    "correct": "正确数",
+    "newTopic": "学习新主题"
+  }
+}

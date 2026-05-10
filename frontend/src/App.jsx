@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "./hooks/useAuth";
 import { useLanguage } from "./hooks/useLanguage";
+import i18n, { LANG_TO_I18N } from "./i18n";
 import { getDirection } from "./utils/direction";
 import { api } from "./api/client";
 import LoginPage from "./pages/LoginPage";
@@ -21,6 +22,10 @@ function App() {
   const [completionStats, setCompletionStats] = useState(null);
 
   const direction = getDirection(selectedLanguage);
+
+  useEffect(() => {
+    i18n.changeLanguage(LANG_TO_I18N[selectedLanguage.name] || 'en');
+  }, [selectedLanguage]);
 
   const handleStart = async (topic, languageOverride = null, isResume = false) => {
     setPendingTopic(topic);

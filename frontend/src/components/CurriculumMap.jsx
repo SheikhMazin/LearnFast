@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { CheckIcon, LockIcon, RefreshIcon } from "./Icons";
 
 const STATUS_CONFIG = {
@@ -8,11 +9,12 @@ const STATUS_CONFIG = {
 };
 
 function CurriculumMap({ curriculum, topic }) {
+  const { t } = useTranslation();
   if (!curriculum || curriculum.length === 0) return null;
 
   return (
     <aside className="w-52 flex-shrink-0 py-6 px-4 hidden lg:flex flex-col sidebar">
-      <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-dim)" }}>Curriculum</p>
+      <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--text-dim)" }}>{t("curriculum.title")}</p>
       <p className="text-sm font-semibold mb-5 truncate font-title text-xl" style={{ color: "var(--green-light)" }}>
         {topic}
       </p>
@@ -41,8 +43,10 @@ function CurriculumMap({ curriculum, topic }) {
 
       <div className="mt-auto pt-4" style={{ borderTop: "1px solid var(--border)" }}>
         <p className="text-xs" style={{ color: "var(--text-dim)" }}>
-          {curriculum.filter((n) => n.status === "complete").length} /{" "}
-          {curriculum.length} complete
+          {t("curriculum.progress", {
+            done: curriculum.filter((n) => n.status === "complete").length,
+            total: curriculum.length,
+          })}
         </p>
       </div>
     </aside>

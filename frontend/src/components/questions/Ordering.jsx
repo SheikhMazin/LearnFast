@@ -1,9 +1,9 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 function Ordering({ question, items, onSubmit }) {
-  const [order, setOrder] = useState(
-    () => (items || []).map((text, i) => ({ id: i, text }))
-  );
+  const { t } = useTranslation();
+  const [order, setOrder] = useState(() => (items || []).map((text, i) => ({ id: i, text })));
   const [dragging, setDragging] = useState(null);
   const [dragOver, setDragOver] = useState(null);
 
@@ -20,14 +20,10 @@ function Ordering({ question, items, onSubmit }) {
   };
   const onDragEnd = () => { setDragging(null); setDragOver(null); };
 
-  const handleSubmit = () => {
-    onSubmit(order.map((item) => item.id + 1).join(","));
-  };
-
   return (
     <div className="flex flex-col gap-4">
       <p className="text-base leading-snug font-medium" style={{ color: "var(--ink)" }}>{question}</p>
-      <p className="text-xs" style={{ color: "var(--ink-muted)" }}>Drag the steps into the correct order</p>
+      <p className="text-xs" style={{ color: "var(--ink-muted)" }}>{t("question.dragInstruction")}</p>
 
       <div className="flex flex-col gap-2">
         {order.map((item, idx) => (
@@ -58,8 +54,8 @@ function Ordering({ question, items, onSubmit }) {
         ))}
       </div>
 
-      <button onClick={handleSubmit} className="btn-primary w-full py-3 text-sm">
-        Submit order
+      <button onClick={() => onSubmit(order.map((item) => item.id + 1).join(","))} className="btn-primary w-full py-3 text-sm">
+        {t("question.submitOrder")}
       </button>
     </div>
   );

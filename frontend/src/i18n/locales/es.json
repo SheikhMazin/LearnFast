@@ -1,0 +1,122 @@
+{
+  "login": {
+    "subtitle": "Inicia sesión para continuar aprendiendo",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "submit": "Iniciar sesión",
+    "submitting": "Iniciando sesión...",
+    "error": "Correo electrónico o contraseña incorrectos",
+    "noAccount": "¿No tienes cuenta?",
+    "signUp": "Regístrate"
+  },
+  "signup": {
+    "subtitle": "Crea tu cuenta",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "submit": "Crear cuenta",
+    "submitting": "Creando cuenta...",
+    "error": "Error al registrarse. El correo puede estar en uso.",
+    "hasAccount": "¿Ya tienes cuenta?",
+    "signIn": "Iniciar sesión",
+    "emailRequired": "El correo electrónico es obligatorio",
+    "passwordRequired": "La contraseña es obligatoria",
+    "passwordLength": "La contraseña debe tener al menos 6 caracteres",
+    "passwordMatch": "Las contraseñas no coinciden"
+  },
+  "home": {
+    "headline": "¿Qué quieres aprender hoy?",
+    "subtext": "Lecciones generadas por IA en tu idioma, adaptándose a tu nivel en tiempo real.",
+    "topicLabel": "Tema",
+    "topicPlaceholder": "Ej. Fotosíntesis, Segunda Guerra Mundial, Álgebra básica...",
+    "languageLabel": "Idioma",
+    "startButton": "Empezar a aprender",
+    "topicError": "Por favor, introduce un tema primero",
+    "logout": "Cerrar sesión"
+  },
+  "sidebar": {
+    "pastCurriculums": "Currículos anteriores",
+    "noSessions": "Aún no hay sesiones anteriores.",
+    "startPrompt": "¡Empieza a aprender algo!",
+    "sessions_one": "{{count}} sesión",
+    "sessions_other": "{{count}} sesiones"
+  },
+  "hud": {
+    "logout": "Cerrar sesión",
+    "accuracy": "% prec",
+    "difficulty": {
+      "1": "Principiante",
+      "2": "Elemental",
+      "3": "Intermedio",
+      "4": "Avanzado",
+      "5": "Experto"
+    }
+  },
+  "cards": {
+    "historyBanner": "Viendo tarjeta anterior — avanza para continuar",
+    "loadingNext": "Cargando siguiente tarjeta...",
+    "loading": "Cargando...",
+    "askQuestion": "¿Confundido? Haz una pregunta"
+  },
+  "loading": {
+    "building": "Construyendo tu currículo",
+    "buildingSubtext": "Generando una lección personalizada sobre",
+    "resuming": "Reanudando tu sesión",
+    "resumingSubtext": "Cargando tu trabajo anterior sobre"
+  },
+  "curriculum": {
+    "title": "Currículo",
+    "progress": "{{done}} / {{total}} completado"
+  },
+  "flashcard": {
+    "tapReveal": "Toca para revelar",
+    "explanation": "Explicación",
+    "gotIt": "Entendido"
+  },
+  "lesson": {
+    "label": "Lección",
+    "challenge": "Listo para un desafío"
+  },
+  "question": {
+    "alreadyAnswered": "Respuesta ya enviada — avanza para continuar.",
+    "submitAnswer": "Enviar respuesta",
+    "placeholder": "Tu respuesta...",
+    "textareaPlaceholder": "Escribe tu respuesta aquí...",
+    "dragInstruction": "Arrastra los pasos al orden correcto",
+    "submitOrder": "Enviar orden"
+  },
+  "feedback": {
+    "correct": "¡Correcto!",
+    "incorrect": "No del todo",
+    "yourAnswer": "Tu respuesta",
+    "correctAnswer": "Respuesta correcta",
+    "aiFeedback": "Retroalimentación IA",
+    "nextConcept": "Siguiente concepto",
+    "nextQuestion": "Siguiente pregunta",
+    "movingOn": "Avanzando a: {{concept}}",
+    "greatNext": "¡Genial — siguiente concepto!",
+    "revisit": "Revisemos: {{concept}}",
+    "stepBack": "Retrocedamos y revisemos la base.",
+    "curriculumDone": "¡Completaste todo el currículo!"
+  },
+  "qa": {
+    "header": "Haz una pregunta",
+    "about": "Sobre: {{topic}}",
+    "empty": "Pregunta lo que quieras sobre este tema.",
+    "you": "Tú",
+    "thinking": "Pensando...",
+    "placeholder": "Pregunta lo que quieras...",
+    "send": "Enviar"
+  },
+  "completion": {
+    "title": "¡Currículo completado!",
+    "subtitle": "Dominaste {{topic}} en {{language}}",
+    "questions": "Preguntas",
+    "accuracy": "Precisión",
+    "bestStreak": "Mejor racha",
+    "finalLevel": "Nivel final",
+    "avgTime": "Tiempo medio",
+    "correct": "Correctas",
+    "newTopic": "Empezar un tema nuevo"
+  }
+}

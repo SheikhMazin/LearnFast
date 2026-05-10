@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 function LoginPage({ onLogin, onGoToSignUp }) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
@@ -9,8 +11,8 @@ function LoginPage({ onLogin, onGoToSignUp }) {
 
   const validate = () => {
     const e = {};
-    if (!email.trim()) e.email = "Email is required";
-    if (!password.trim()) e.password = "Password is required";
+    if (!email.trim()) e.email = t("signup.emailRequired");
+    if (!password.trim()) e.password = t("signup.passwordRequired");
     return e;
   };
 
@@ -20,7 +22,7 @@ function LoginPage({ onLogin, onGoToSignUp }) {
     setLoading(true);
     setServerError("");
     const ok = await onLogin(email, password);
-    if (!ok) setServerError("Invalid email or password");
+    if (!ok) setServerError(t("login.error"));
     setLoading(false);
   };
 
@@ -32,7 +34,7 @@ function LoginPage({ onLogin, onGoToSignUp }) {
             Vernā
           </h1>
           <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-            Sign in to continue learning
+            {t("login.subtitle")}
           </p>
         </div>
 
@@ -47,7 +49,7 @@ function LoginPage({ onLogin, onGoToSignUp }) {
           <div className="space-y-5">
             <div>
               <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: "var(--ink-muted)" }}>
-                Email
+                {t("login.email")}
               </label>
               <input
                 type="email"
@@ -68,7 +70,7 @@ function LoginPage({ onLogin, onGoToSignUp }) {
 
             <div>
               <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: "var(--ink-muted)" }}>
-                Password
+                {t("login.password")}
               </label>
               <input
                 type="password"
@@ -91,18 +93,18 @@ function LoginPage({ onLogin, onGoToSignUp }) {
               disabled={loading}
               className="btn-primary w-full py-3 text-sm mt-2"
             >
-              {loading ? "Signing in..." : "Sign in"}
+              {loading ? t("login.submitting") : t("login.submit")}
             </button>
           </div>
 
           <p className="text-center text-xs mt-6" style={{ color: "var(--ink-muted)" }}>
-            Don't have an account?{" "}
+            {t("login.noAccount")}{" "}
             <span
               onClick={onGoToSignUp}
               className="cursor-pointer font-semibold hover:underline"
               style={{ color: "var(--green)" }}
             >
-              Sign up
+              {t("login.signUp")}
             </span>
           </p>
         </div>
