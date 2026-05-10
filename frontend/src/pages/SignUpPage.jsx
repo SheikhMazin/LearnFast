@@ -1,7 +1,19 @@
 import { useState } from "react";
 
+const inputCls =
+  "w-full text-sm px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 text-gray-900";
+
+function Field({ label, type, value, onChange, error }) {
+  return (
+    <div>
+      <label className="text-xs text-gray-400 mb-1 block">{label}</label>
+      <input type={type} value={value} onChange={onChange} className={inputCls} />
+      {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
+    </div>
+  );
+}
+
 function SignUpPage({ onSignUp, onGoToLogin }) {
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -10,42 +22,35 @@ function SignUpPage({ onSignUp, onGoToLogin }) {
   const [loading, setLoading] = useState(false);
 
   const validate = () => {
-    const newErrors = {};
-    if (!name.trim()) newErrors.name = "Full name is required";
-    if (!email.trim()) newErrors.email = "Email is required";
-    if (!password.trim()) newErrors.password = "Password is required";
-    else if (password.length < 6) newErrors.password = "Password must be at least 6 characters";
-    if (!confirm.trim()) newErrors.confirm = "Please confirm your password";
-    else if (confirm !== password) newErrors.confirm = "Passwords do not match";
-    return newErrors;
+    const e = {};
+    if (!email.trim()) e.email = "Email is required";
+    if (!password.trim()) e.password = "Password is required";
+    else if (password.length < 6) e.password = "Password must be at least 6 characters";
+    if (confirm !== password) e.confirm = "Passwords do not match";
+    return e;
   };
 
   const handleSignUp = async () => {
-    const newErrors = validate();
-    if (Object.keys(newErrors).length > 0) { setErrors(newErrors); return; }
+    const e = validate();
+    if (Object.keys(e).length) { setErrors(e); return; }
     setLoading(true);
     setServerError("");
-    const success = await onSignUp(email, password);
-    if (!success) setServerError("Signup failed. Email may already be in use.");
+    const ok = await onSignUp(email, password);
+    if (!ok) setServerError("Signup failed. Email may already be in use.");
     setLoading(false);
   };
 
-  const field = (label, type, placeholder, value, setter, errorKey) => (
-    <div>
-      <label className="text-xs text-gray-400 mb-1 block">{label}</label>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => { setter(e.target.value); setErrors(p => ({ ...p, [errorKey]: "" })); }}
-        className={`w-full text-sm px-3 py-2 rounded-lg border bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 text-gray-900 ...`}       />
-      {errors[errorKey] && <p className="text-xs text-red-400 mt-1">{errors[errorKey]}</p>}
-    </div>
-  );
+  const setField = (key) => (ev) => {
+    const val = ev.target.value;
+    setErrors((p) => ({ ...p, [key]: "" }));
+    if (key === "email") setEmail(val);
+    if (key === "password") setPassword(val);
+    if (key === "confirm") setConfirm(val);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="bg-white rounded-2xl border border-gray-100 p-8 w-full max-w-sm">
-
+      <div className="bg-white rounded-2xl border border-gray-100 p-8 w-full max-w-sm shadow-sm">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-medium text-gray-900">LearnFast</h1>
           <p className="text-sm text-gray-400 mt-1">Create your account</p>
@@ -58,15 +63,14 @@ function SignUpPage({ onSignUp, onGoToLogin }) {
         )}
 
         <div className="space-y-4">
-          {field("Full name", "text", "John Doe", name, setName, "name")}
-          {field("Email", "email", "you@example.com", email, setEmail, "email")}
-          {field("Password", "password", "••••••••", password, setPassword, "password")}
-          {field("Confirm password", "password", "••••••••", confirm, setConfirm, "confirm")}
+          <Field label="Email" type="email" value={email} onChange={setField("email")} error={errors.email} />
+          <Field label="Password" type="password" value={password} onChange={setField("password")} error={errors.password} />
+          <Field label="Confirm password" type="password" value={confirm} onChange={setField("confirm")} error={errors.confirm} />
 
           <button
             onClick={handleSignUp}
             disabled={loading}
-            className="w-full text-sm py-2.5 rounded-lg bg-gray-900 text-white font-medium mt-2 disabled:opacity-50"
+            className="w-full text-sm py-2.5 rounded-lg bg-gray-900 text-white font-medium mt-2 disabled:opacity-50 hover:bg-gray-800 transition-colors"
           >
             {loading ? "Creating account..." : "Create account"}
           </button>
@@ -74,7 +78,9 @@ function SignUpPage({ onSignUp, onGoToLogin }) {
 
         <p className="text-center text-xs text-gray-400 mt-6">
           Already have an account?{" "}
-          <span onClick={onGoToLogin} className="text-gray-700 cursor-pointer hover:underline">Sign in</span>
+          <span onClick={onGoToLogin} className="text-gray-700 cursor-pointer hover:underline">
+            Sign in
+          </span>
         </p>
       </div>
     </div>

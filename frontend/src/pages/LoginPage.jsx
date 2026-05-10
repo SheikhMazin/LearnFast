@@ -8,26 +8,28 @@ function LoginPage({ onLogin, onGoToSignUp }) {
   const [loading, setLoading] = useState(false);
 
   const validate = () => {
-    const newErrors = {};
-    if (!email.trim()) newErrors.email = "Email is required";
-    if (!password.trim()) newErrors.password = "Password is required";
-    return newErrors;
+    const e = {};
+    if (!email.trim()) e.email = "Email is required";
+    if (!password.trim()) e.password = "Password is required";
+    return e;
   };
 
   const handleLogin = async () => {
-    const newErrors = validate();
-    if (Object.keys(newErrors).length > 0) { setErrors(newErrors); return; }
+    const e = validate();
+    if (Object.keys(e).length) { setErrors(e); return; }
     setLoading(true);
     setServerError("");
-    const success = await onLogin(email, password);
-    if (!success) setServerError("Invalid email or password");
+    const ok = await onLogin(email, password);
+    if (!ok) setServerError("Invalid email or password");
     setLoading(false);
   };
 
+  const inputCls =
+    "w-full text-sm px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 text-gray-900";
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="bg-white rounded-2xl border border-gray-100 p-8 w-full max-w-sm">
-
+      <div className="bg-white rounded-2xl border border-gray-100 p-8 w-full max-w-sm shadow-sm">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-medium text-gray-900">LearnFast</h1>
           <p className="text-sm text-gray-400 mt-1">Sign in to continue learning</p>
@@ -45,8 +47,10 @@ function LoginPage({ onLogin, onGoToSignUp }) {
             <input
               type="email"
               value={email}
-              onChange={(e) => { setEmail(e.target.value); setErrors(p => ({ ...p, email: "" })); }}
-              className={`w-full text-sm px-3 py-2 rounded-lg border bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 text-gray-900 ...`}            />
+              onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: "" })); }}
+              onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+              className={inputCls}
+            />
             {errors.email && <p className="text-xs text-red-400 mt-1">{errors.email}</p>}
           </div>
 
@@ -55,15 +59,17 @@ function LoginPage({ onLogin, onGoToSignUp }) {
             <input
               type="password"
               value={password}
-              onChange={(e) => { setPassword(e.target.value); setErrors(p => ({ ...p, password: "" })); }}
-              className={`w-full text-sm px-3 py-2 rounded-lg border bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 text-gray-900 ...`}            />
+              onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: "" })); }}
+              onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+              className={inputCls}
+            />
             {errors.password && <p className="text-xs text-red-400 mt-1">{errors.password}</p>}
           </div>
 
           <button
             onClick={handleLogin}
             disabled={loading}
-            className="w-full text-sm py-2.5 rounded-lg bg-gray-900 text-white font-medium mt-2 disabled:opacity-50"
+            className="w-full text-sm py-2.5 rounded-lg bg-gray-900 text-white font-medium mt-2 disabled:opacity-50 hover:bg-gray-800 transition-colors"
           >
             {loading ? "Signing in..." : "Sign in"}
           </button>
@@ -71,7 +77,9 @@ function LoginPage({ onLogin, onGoToSignUp }) {
 
         <p className="text-center text-xs text-gray-400 mt-6">
           Don't have an account?{" "}
-          <span onClick={onGoToSignUp} className="text-gray-700 cursor-pointer hover:underline">Sign up</span>
+          <span onClick={onGoToSignUp} className="text-gray-700 cursor-pointer hover:underline">
+            Sign up
+          </span>
         </p>
       </div>
     </div>

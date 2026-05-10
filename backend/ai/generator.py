@@ -1,35 +1,126 @@
+import json
+import re
+
 from ai.client import call_granite
-from ai.prompts import get_system_prompt, build_lesson_prompt, build_challenge_prompt, build_feedback_prompt
+from ai.prompts import (
+    get_system_prompt,
+    build_curriculum_prompt,
+    build_lesson_prompt,
+    build_challenge_prompt,
+    build_feedback_prompt,
+    build_flashcard_prompt,
+    build_qa_prompt,
+)
 from ai.question_types import parse_question_response
 
 
-def generate_lesson(topic: str, language: str, difficulty: int) -> dict:
-    """
-    Args:
-        topic:      Subject to teach (e.g. "fractions")
-        language:   Target language string (e.g. "Spanish")
-        difficulty: Int 1–5
+# ── Curriculum ────────────────────────────────────────────────
 
-    Returns:
-        dict with keys: lesson, topic, language, difficulty
-
-    Raises:
-        Exception: propagated from call_granite — caught by the Flask route handler
+def generate_curriculum(topic: str, language: str) -> list:
     """
-    
+    Ask Granite to produce a 6–8 node concept graph for the topic.
+    Returns a list of dicts: [{id, concept, prerequisite, status}, ...]
+    Falls back to a single-node curriculum if parsing fails.
+    """
+    system_prompt = (
+        "You are a curriculum designer. "
+        "Respond ONLY with a valid JSON array. No markdown, no explanation, no extra text."
+    )
+    user_prompt = build_curriculum_prompt(topic)
+    raw = call_granite(system_prompt, user_prompt, max_tokens=600)
+
+    nodes = _parse_json_list(raw)
+
+    if not nodes:
+        # Graceful fallback — one node so the session still works
+        nodes = [{"id": 0, "concept": topic, "prerequisite": None}]
+
+    # Attach status field used by the frontend
+    for i, node in enumerate(nodes):
+        node["id"]     = i                          # re-index defensively
+        node["status"] = "in_progress" if i == 0 else "locked"
+
+    return nodes
+
+
+def _parse_json_list(raw: str) -> list:
+    """Try several strategies to extract a JSON array from Granite output."""
+    raw = raw.strip()
+
+    # Strip markdown code fences
+    raw = re.sub(r"^```(?:json)?\s*", "", raw)
+    raw = re.sub(r"\s*```$", "", raw)
+    raw = raw.strip()
+
+    # Direct parse
+    try:
+        result = json.loads(raw)
+        if isinstance(result, list):
+            return result
+    except json.JSONDecodeError:
+        pass
+
+    # Find the first [...] block
+    match = re.search(r"\[.*\]", raw, re.DOTALL)
+    if match:
+        try:
+            result = json.loads(match.group())
+            if isinstance(result, list):
+                return result
+        except json.JSONDecodeError:
+            pass
+
+    return []
+
+
+def _parse_json_dict(raw: str) -> dict:
+    """Try several strategies to extract a JSON object from Granite output."""
+    raw = raw.strip()
+    raw = re.sub(r"^```(?:json)?\s*", "", raw)
+    raw = re.sub(r"\s*```$", "", raw)
+    raw = raw.strip()
+
+    try:
+        result = json.loads(raw)
+        if isinstance(result, dict):
+            return result
+    except json.JSONDecodeError:
+        pass
+
+    match = re.search(r"\{.*\}", raw, re.DOTALL)
+    if match:
+        try:
+            result = json.loads(match.group())
+            if isinstance(result, dict):
+                return result
+        except json.JSONDecodeError:
+            pass
+
+    return {}
+
+
+# ── Lesson ────────────────────────────────────────────────────
+
+def generate_lesson(
+    topic: str,
+    language: str,
+    difficulty: int,
+    concept: str = None,
+) -> dict:
     system_prompt = get_system_prompt(language)
-    
-    user_prompt = build_lesson_prompt(topic, language, difficulty)
-    
-    raw_test = call_granite(system_prompt, user_prompt)
-    
+    user_prompt   = build_lesson_prompt(topic, language, difficulty, concept=concept)
+    lesson_text   = call_granite(system_prompt, user_prompt)
+
     return {
-        "lesson": raw_test,
-        "topic": topic,
-        "language": language,
-        "difficulty": difficulty
+        "lesson":    lesson_text,
+        "topic":     topic,
+        "concept":   concept or topic,
+        "language":  language,
+        "difficulty": difficulty,
     }
 
+
+# ── Challenge ─────────────────────────────────────────────────
 
 def generate_challenge(
     topic: str,
@@ -37,38 +128,17 @@ def generate_challenge(
     lesson_context: str,
     difficulty: int,
     question_type: str,
+    concept: str = None,
 ) -> dict:
-    """
-    Generate a challenge question and return it as a structured dict.
-
-    What to do:
-    - Call get_system_prompt(language) → system_prompt
-    - Call build_challenge_prompt(topic, language, lesson_context, difficulty, question_type) → user_prompt
-    - Call call_granite(system_prompt, user_prompt, max_tokens=500) → raw_text
-    - Call parse_question_response(raw_text, question_type) → structured dict
-    - Return the structured dict from parse_question_response
-      (it already contains "type", "question", "correct_answer", and type-specific fields)
-
-    Args:
-        topic:          Subject being tested
-        language:       Target language
-        lesson_context: The lesson text that was shown to the user this round
-        difficulty:     Int 1–5
-        question_type:  One of "multiple_choice", "fill_blank", "true_false",
-                        "short_answer", "ordering"
-
-    Returns:
-        dict: Structured question — exact shape depends on question_type (see question_types.py)
-    """
-    
-    sys_prompt = get_system_prompt(language)
-    user_prompt = build_challenge_prompt(topic, language, lesson_context, difficulty, question_type)
-    raw_text = call_granite(sys_prompt, user_prompt)
-    
+    system_prompt = get_system_prompt(language)
+    user_prompt   = build_challenge_prompt(
+        topic, language, lesson_context, difficulty, question_type, concept=concept
+    )
+    raw_text = call_granite(system_prompt, user_prompt, max_tokens=500)
     return parse_question_response(raw_text, question_type)
-    
-    
 
+
+# ── Feedback ──────────────────────────────────────────────────
 
 def generate_feedback(
     user_answer: str,
@@ -77,41 +147,89 @@ def generate_feedback(
     is_correct: bool,
     topic: str,
 ) -> dict:
-    """
-    Generate feedback on the user's answer and return it as a dict.
+    system_prompt = get_system_prompt(language)
+    user_prompt   = build_feedback_prompt(
+        user_answer, correct_answer, language, is_correct, topic
+    )
+    raw_text = call_granite(system_prompt, user_prompt, max_tokens=200)
+    return {"feedback": raw_text, "is_correct": is_correct, "language": language}
 
-    What to do:
-    - Call get_system_prompt(language) → system_prompt
-    - Call build_feedback_prompt(user_answer, correct_answer, language, is_correct, topic) → user_prompt
-    - Call call_granite(system_prompt, user_prompt, max_tokens=200) → raw_text
-    - Return:
-        {
-            "feedback":   raw_text,
-            "is_correct": is_correct,
-            "language":   language,
+
+# ── Flashcard ─────────────────────────────────────────────────
+
+def generate_flashcard(concept: str, topic: str, language: str) -> dict:
+    """
+    Returns a flashcard dict: { front, back, fact_tag, concept, language }
+    Falls back gracefully if JSON parsing fails.
+    """
+    system_prompt = get_system_prompt(language)
+    user_prompt   = build_flashcard_prompt(concept, topic, language)
+    raw           = call_granite(system_prompt, user_prompt, max_tokens=200)
+
+    card = _parse_json_dict(raw)
+
+    if not card.get("front") or not card.get("back"):
+        # Fallback: treat raw output as the back of the card
+        card = {
+            "front":    f"What is '{concept}'?",
+            "back":     raw[:300].strip(),
+            "fact_tag": "Key term",
         }
 
-    Note: is_correct is determined by the backend (session.py), NOT by Granite.
-    Granite only generates the explanation text — it never decides if the answer is right.
+    card["concept"]  = concept
+    card["topic"]    = topic
+    card["language"] = language
+    card["type"]     = "flashcard"
+    return card
 
-    Args:
-        user_answer:    What the user submitted
-        correct_answer: The correct answer from the question dict
-        language:       Target language
-        is_correct:     Pre-computed correctness flag
-        topic:          Topic for feedback context
 
-    Returns:
-        dict with keys: feedback, is_correct, language
+# ── Semantic answer checking ──────────────────────────────────
+
+def check_answer_semantic(
+    user_answer: str,
+    correct_answer: str,
+    language: str,
+) -> bool:
     """
-    
-    sys_prompt = get_system_prompt(language)
-    user_prompt = build_feedback_prompt(user_answer, correct_answer, language, is_correct, topic)
-    raw_text = call_granite(sys_prompt, user_prompt)
-    
+    Ask Granite whether user_answer is semantically equivalent to correct_answer.
+    Used for fill_blank and short_answer where exact string matching is too strict.
+    Falls back to False on any AI or network error.
+    """
+    system_prompt = (
+        "You are a strict answer evaluator. "
+        "Reply with ONLY the single word CORRECT or INCORRECT — no punctuation, no explanation."
+    )
+    user_prompt = (
+        f"Model answer: '{correct_answer}'\n"
+        f"Student's answer: '{user_answer}'\n"
+        f"Is the student's answer semantically correct or equivalent to the model answer? "
+        f"Accept synonyms, minor spelling variations, and answers that are partially correct "
+        f"but convey the core idea. "
+        f"Reply with only CORRECT or INCORRECT."
+    )
+    try:
+        raw = call_granite(system_prompt, user_prompt, max_tokens=10)
+        return raw.strip().upper().startswith("CORRECT")
+    except Exception:
+        return False
+
+
+# ── Q&A ───────────────────────────────────────────────────────
+
+def generate_qa(
+    question: str,
+    concept: str,
+    topic: str,
+    language: str,
+) -> dict:
+    system_prompt = get_system_prompt(language)
+    user_prompt   = build_qa_prompt(question, concept, topic, language)
+    answer        = call_granite(system_prompt, user_prompt, max_tokens=200)
+
     return {
-        "feedback": raw_text,
-        "is_correct": is_correct,
-        "language": language,
+        "type":            "qa",
+        "user_question":   question,
+        "answer":          answer,
+        "concept_context": concept,
+        "language":        language,
     }
-    pass
