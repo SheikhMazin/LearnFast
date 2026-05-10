@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { api, parseChallenge } from "../api/client";
+import { FlameIcon } from "../components/Icons";
 import CardStack from "../components/cards/CardStack";
 import CurriculumMap from "../components/CurriculumMap";
+import HistoryPanel from "../components/HistoryPanel";
 import QADrawer from "../components/QADrawer";
 
 const DIFF_LABEL = { 1: "Beginner", 2: "Elementary", 3: "Intermediate", 4: "Advanced", 5: "Expert" };
 
-function SessionPage({ session, onComplete, onHome, user, logout }) {
+function SessionPage({ session, onComplete, onHome, onStart, logout }) {
   const { sessionId, topic, language } = session;
 
   const [cards, setCards] = useState([]);
@@ -34,8 +36,12 @@ function SessionPage({ session, onComplete, onHome, user, logout }) {
     setCurriculum((prev) =>
       prev.map((node) => {
         if (nextAction === "advance") {
-          if (node.id === nodeContext.completed_node) return { ...node, status: "complete" };
-          if (node.id === nodeContext.next_node) return { ...node, status: "in_progress" };
+          // backend increments current_node before building context:
+          // completed = current_node - 1, newly active = current_node
+          if (node.id === nodeContext.current_node - 1) return { ...node, status: "complete" };
+          if (node.id === nodeContext.current_node) return { ...node, status: "in_progress" };
+        } else if (nextAction === "curriculum_complete") {
+          if (node.id === nodeContext.current_node) return { ...node, status: "complete" };
         } else if (nextAction === "rollback") {
           if (node.id === nodeContext.current_node) return { ...node, status: "in_progress" };
         }
@@ -130,7 +136,6 @@ function SessionPage({ session, onComplete, onHome, user, logout }) {
   const handleAdvance = useCallback(async () => {
     if (isLoading) return;
 
-    // In history — just step forward
     if (cardIdx < cards.length - 1) {
       setCardIdx((i) => i + 1);
       return;
@@ -155,7 +160,6 @@ function SessionPage({ session, onComplete, onHome, user, logout }) {
         onComplete(currentCard.data.session);
       }
     }
-    // question cards don't advance — must submit answer
   }, [cards, cardIdx, isLoading, fetchFlashcard, fetchLesson, fetchChallenge, onComplete]);
 
   const handleBack = useCallback(() => {
@@ -175,7 +179,6 @@ function SessionPage({ session, onComplete, onHome, user, logout }) {
     [sessionId]
   );
 
-  // Bootstrap: load first flashcard + lesson in parallel
   useEffect(() => {
     async function init() {
       setIsLoading(true);
@@ -201,7 +204,6 @@ function SessionPage({ session, onComplete, onHome, user, logout }) {
     init();
   }, [sessionId]);
 
-  // Keyboard navigation
   useEffect(() => {
     const onKey = (e) => {
       if (qaOpen) return;
@@ -222,26 +224,32 @@ function SessionPage({ session, onComplete, onHome, user, logout }) {
     (currentCard && currentCard.type !== "question" && !isLoading);
 
   return (
-    <div className="min-h-screen bg-[#0f1117] flex">
-      <CurriculumMap curriculum={curriculum} topic={topic} />
+    <div className="h-screen overflow-hidden flex" style={{ background: "var(--bg)" }}>
+      <HistoryPanel onResume={onStart} onHome={onHome} />
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 min-h-0">
         {/* HUD */}
-        <header className="flex items-center justify-between px-6 py-4 border-b border-gray-800 flex-shrink-0">
-          <button onClick={onHome} className="text-blue-500 font-bold text-lg">
-            LearnFast
-          </button>
+        <header
+          className="flex items-center justify-between px-6 py-4 flex-shrink-0"
+          style={{ borderBottom: "1px solid var(--border)" }}
+        >
           <div className="flex items-center gap-5 text-sm">
-            <span className="text-orange-400 font-medium">🔥 {stats.streak}</span>
-            <span className="text-gray-400">
+            <span className="flex items-center gap-1 font-medium" style={{ color: "var(--warning)" }}>
+              <FlameIcon className="w-3.5 h-3.5" />
+              {stats.streak}
+            </span>
+            <span style={{ color: "var(--text-muted)" }}>
               {Math.round((stats.accuracy || 0) * 100)}% acc
             </span>
-            <span className="text-purple-400">
+            <span style={{ color: "var(--green-light)" }}>
               {DIFF_LABEL[stats.difficulty] || `Lvl ${stats.difficulty}`}
             </span>
             <button
               onClick={logout}
-              className="text-gray-500 hover:text-white transition-colors"
+              className="transition-colors"
+              style={{ color: "var(--text-dim)" }}
+              onMouseEnter={(e) => e.target.style.color = "var(--text-muted)"}
+              onMouseLeave={(e) => e.target.style.color = "var(--text-dim)"}
             >
               Logout
             </button>
@@ -249,37 +257,37 @@ function SessionPage({ session, onComplete, onHome, user, logout }) {
         </header>
 
         {/* Card area */}
-        <div className="flex-1 flex items-center justify-center p-6 overflow-hidden">
+        <div className="flex-1 overflow-y-auto min-h-0 flex flex-col items-center p-6">
           {isLoading && cards.length === 0 ? (
-            <div className="flex flex-col items-center gap-4 text-gray-500">
-              <div className="w-10 h-10 rounded-full border-4 border-gray-800 border-t-blue-500 animate-spin" />
+            <div className="my-auto flex flex-col items-center gap-4" style={{ color: "var(--text-muted)" }}>
+              <div
+                className="w-10 h-10 rounded-full border-4 border-transparent animate-spin"
+                style={{ borderTopColor: "var(--green-light)" }}
+              />
               <p className="text-sm">Loading...</p>
             </div>
           ) : (
-            <CardStack
-              cards={cards}
-              cardIdx={cardIdx}
-              isInHistory={isInHistory}
-              isLoading={isLoading}
-              canGoBack={canGoBack}
-              canGoForward={canGoForward}
-              onBack={handleBack}
-              onForward={handleAdvance}
-              onAnswer={handleAnswer}
-              stats={stats}
-            />
+            <div className="my-auto w-full">
+              <CardStack
+                cards={cards}
+                cardIdx={cardIdx}
+                isInHistory={isInHistory}
+                isLoading={isLoading}
+                canGoBack={canGoBack}
+                canGoForward={canGoForward}
+                onBack={handleBack}
+                onForward={handleAdvance}
+                onAnswer={handleAnswer}
+                onAskQuestion={() => setQaOpen(true)}
+                stats={stats}
+              />
+            </div>
           )}
         </div>
       </div>
 
-      {/* Q&A */}
-      <button
-        onClick={() => setQaOpen(true)}
-        className="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xl flex items-center justify-center shadow-xl transition-colors z-40"
-        title="Ask a question"
-      >
-        💬
-      </button>
+      <CurriculumMap curriculum={curriculum} topic={topic} />
+
       {qaOpen && (
         <QADrawer
           thread={qaThread}

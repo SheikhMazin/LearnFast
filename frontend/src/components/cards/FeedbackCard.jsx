@@ -1,3 +1,5 @@
+import { CheckIcon, XIcon, BoltIcon } from "../Icons";
+
 function FeedbackCard({ data, onNext, isReadOnly }) {
   const { isCorrect, feedback, userAnswer, correctAnswer, nextAction, nodeContext } = data;
 
@@ -5,17 +7,17 @@ function FeedbackCard({ data, onNext, isReadOnly }) {
     if (nextAction === "advance") {
       const next = nodeContext?.concept || nodeContext?.next_concept;
       return next
-        ? { text: `Moving on to: ${next}`, cls: "text-emerald-400" }
-        : { text: "Great — next concept!", cls: "text-emerald-400" };
+        ? { text: `Moving on to: ${next}`, color: "var(--success)" }
+        : { text: "Great — next concept!", color: "var(--success)" };
     }
     if (nextAction === "rollback") {
       const to = nodeContext?.rollback_to;
       return to
-        ? { text: `Let's revisit: ${to}`, cls: "text-amber-400" }
-        : { text: "Let's step back and revisit the foundation.", cls: "text-amber-400" };
+        ? { text: `Let's revisit: ${to}`, color: "var(--warning)" }
+        : { text: "Let's step back and revisit the foundation.", color: "var(--warning)" };
     }
     if (nextAction === "curriculum_complete") {
-      return { text: "You've completed the entire curriculum! 🎉", cls: "text-emerald-400" };
+      return { text: "You've completed the entire curriculum!", color: "var(--success)" };
     }
     return null;
   };
@@ -27,53 +29,74 @@ function FeedbackCard({ data, onNext, isReadOnly }) {
       {/* Result */}
       <div className="flex flex-col items-center py-3 gap-2">
         <div
-          className={`w-14 h-14 rounded-full flex items-center justify-center text-xl border-2 ${
+          className="w-14 h-14 rounded-full flex items-center justify-center border-2"
+          style={
             isCorrect
-              ? "bg-emerald-900/40 border-emerald-500 text-emerald-400"
-              : "bg-rose-900/40 border-rose-500 text-rose-400"
-          }`}
+              ? { background: "#e0f0dc", borderColor: "var(--success)", color: "var(--success)" }
+              : { background: "#f0dede", borderColor: "var(--error)", color: "var(--error)" }
+          }
         >
-          {isCorrect ? "✓" : "✗"}
+          {isCorrect ? <CheckIcon className="w-7 h-7" /> : <XIcon className="w-7 h-7" />}
         </div>
-        <h3 className={`text-xl font-bold ${isCorrect ? "text-emerald-400" : "text-rose-400"}`}>
+        <h3
+          className="text-xl font-bold font-title"
+          style={{ color: isCorrect ? "var(--success)" : "var(--error)" }}
+        >
           {isCorrect ? "Correct!" : "Not quite"}
         </h3>
       </div>
 
       {/* Answer block */}
-      <div className="bg-[#0f1117] border border-gray-800 rounded-xl px-4 py-3 space-y-2">
+      <div
+        className="px-4 py-3 space-y-2"
+        style={{
+          background: "var(--card-2)",
+          border: "1px solid var(--card-line)",
+          borderRadius: "3px 8px 6px 3px / 4px 3px 8px 4px",
+        }}
+      >
         <div>
-          <p className="text-xs text-gray-600 uppercase tracking-widest mb-1">Your answer</p>
-          <p className={`text-sm font-medium ${isCorrect ? "text-emerald-400" : "text-rose-400"}`}>
+          <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--ink-muted)" }}>Your answer</p>
+          <p
+            className="text-sm font-medium"
+            style={{ color: isCorrect ? "var(--success)" : "var(--error)" }}
+          >
             {userAnswer}
           </p>
         </div>
         {!isCorrect && correctAnswer && (
           <div>
-            <p className="text-xs text-gray-600 uppercase tracking-widest mb-1">Correct answer</p>
-            <p className="text-sm font-medium text-emerald-400">{correctAnswer}</p>
+            <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--ink-muted)" }}>Correct answer</p>
+            <p className="text-sm font-medium" style={{ color: "var(--success)" }}>{correctAnswer}</p>
           </div>
         )}
       </div>
 
       {/* AI feedback */}
-      <div className="bg-[#0f1117] border-l-4 border-blue-600 rounded-xl px-4 py-3">
-        <p className="text-xs text-blue-500 uppercase tracking-widest mb-1">⚡ AI Feedback</p>
-        <p className="text-gray-300 text-sm leading-relaxed">{feedback}</p>
+      <div
+        className="px-4 py-3"
+        style={{
+          background: "var(--card-2)",
+          borderLeft: "3px solid var(--green)",
+          borderRadius: "2px 8px 6px 2px / 3px 2px 8px 3px",
+        }}
+      >
+        <p className="text-xs uppercase tracking-widest mb-1 flex items-center gap-1" style={{ color: "var(--green)" }}>
+          <BoltIcon className="w-3 h-3" />
+          AI Feedback
+        </p>
+        <p className="text-sm leading-relaxed" style={{ color: "var(--ink)" }}>{feedback}</p>
       </div>
 
       {/* Transition message */}
       {msg && (
-        <p className={`text-xs font-medium text-center ${msg.cls}`}>{msg.text}</p>
+        <p className="text-xs font-medium text-center" style={{ color: msg.color }}>{msg.text}</p>
       )}
 
       {/* CTA */}
       {!isReadOnly && nextAction !== "curriculum_complete" && (
-        <button
-          onClick={onNext}
-          className="w-full py-3 rounded-xl border border-gray-600 text-white font-medium hover:bg-white hover:text-black transition-all text-sm"
-        >
-          {nextAction === "advance" ? "Next concept →" : "Next question →"}
+        <button onClick={onNext} className="btn-outline w-full py-3 text-sm">
+          {nextAction === "advance" ? "Next concept" : "Next question"}
         </button>
       )}
     </div>

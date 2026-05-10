@@ -1,18 +1,5 @@
 import { useState } from "react";
 
-const inputCls =
-  "w-full text-sm px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 text-gray-900";
-
-function Field({ label, type, value, onChange, error }) {
-  return (
-    <div>
-      <label className="text-xs text-gray-400 mb-1 block">{label}</label>
-      <input type={type} value={value} onChange={onChange} className={inputCls} />
-      {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
-    </div>
-  );
-}
-
 function SignUpPage({ onSignUp, onGoToLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,40 +35,100 @@ function SignUpPage({ onSignUp, onGoToLogin }) {
     if (key === "confirm") setConfirm(val);
   };
 
+  const inputStyle = (hasError) => ({
+    background: "rgba(255,255,255,0.6)",
+    border: hasError ? "1.5px solid var(--error)" : "1.5px solid var(--card-border)",
+    color: "var(--ink)",
+    outline: "none",
+  });
+
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="bg-white rounded-2xl border border-gray-100 p-8 w-full max-w-sm shadow-sm">
+    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--bg)" }}>
+      <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-medium text-gray-900">LearnFast</h1>
-          <p className="text-sm text-gray-400 mt-1">Create your account</p>
+          <h1 className="font-title text-5xl mb-1" style={{ color: "var(--green-light)" }}>
+            Vernā
+          </h1>
+          <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+            Create your account
+          </p>
         </div>
 
-        {serverError && (
-          <div className="bg-red-50 border border-red-200 text-red-600 text-xs rounded-lg px-3 py-2 mb-4">
-            {serverError}
+        <div className="notebook-card p-8">
+          {serverError && (
+            <div className="mb-5 px-4 py-2.5 rounded text-sm font-medium"
+              style={{ background: "var(--error-bg)", color: "#e88", border: "1px solid var(--error)" }}>
+              {serverError}
+            </div>
+          )}
+
+          <div className="space-y-5">
+            <div>
+              <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: "var(--ink-muted)" }}>
+                Email
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={setField("email")}
+                onKeyDown={(e) => e.key === "Enter" && handleSignUp()}
+                className="w-full px-3 py-2.5 rounded text-sm"
+                style={inputStyle(errors.email)}
+                autoFocus
+              />
+              {errors.email && <p className="text-xs mt-1" style={{ color: "var(--error)" }}>{errors.email}</p>}
+            </div>
+
+            <div>
+              <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: "var(--ink-muted)" }}>
+                Password
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={setField("password")}
+                onKeyDown={(e) => e.key === "Enter" && handleSignUp()}
+                className="w-full px-3 py-2.5 rounded text-sm"
+                style={inputStyle(errors.password)}
+              />
+              {errors.password && <p className="text-xs mt-1" style={{ color: "var(--error)" }}>{errors.password}</p>}
+            </div>
+
+            <div>
+              <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: "var(--ink-muted)" }}>
+                Confirm password
+              </label>
+              <input
+                type="password"
+                value={confirm}
+                onChange={setField("confirm")}
+                onKeyDown={(e) => e.key === "Enter" && handleSignUp()}
+                className="w-full px-3 py-2.5 rounded text-sm"
+                style={inputStyle(errors.confirm)}
+              />
+              {errors.confirm && <p className="text-xs mt-1" style={{ color: "var(--error)" }}>{errors.confirm}</p>}
+            </div>
+
+            <button
+              onClick={handleSignUp}
+              disabled={loading}
+              className="btn-primary w-full py-3 text-sm mt-2"
+            >
+              {loading ? "Creating account..." : "Create account"}
+            </button>
           </div>
-        )}
 
-        <div className="space-y-4">
-          <Field label="Email" type="email" value={email} onChange={setField("email")} error={errors.email} />
-          <Field label="Password" type="password" value={password} onChange={setField("password")} error={errors.password} />
-          <Field label="Confirm password" type="password" value={confirm} onChange={setField("confirm")} error={errors.confirm} />
-
-          <button
-            onClick={handleSignUp}
-            disabled={loading}
-            className="w-full text-sm py-2.5 rounded-lg bg-gray-900 text-white font-medium mt-2 disabled:opacity-50 hover:bg-gray-800 transition-colors"
-          >
-            {loading ? "Creating account..." : "Create account"}
-          </button>
+          <p className="text-center text-xs mt-6" style={{ color: "var(--ink-muted)" }}>
+            Already have an account?{" "}
+            <span
+              onClick={onGoToLogin}
+              className="cursor-pointer font-semibold hover:underline"
+              style={{ color: "var(--green)" }}
+            >
+              Sign in
+            </span>
+          </p>
         </div>
-
-        <p className="text-center text-xs text-gray-400 mt-6">
-          Already have an account?{" "}
-          <span onClick={onGoToLogin} className="text-gray-700 cursor-pointer hover:underline">
-            Sign in
-          </span>
-        </p>
       </div>
     </div>
   );

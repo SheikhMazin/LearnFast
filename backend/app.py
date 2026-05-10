@@ -456,6 +456,15 @@ def ask():
         return jsonify({"error": str(e)}), 500
 
 
+@app.get("/sessions")
+def list_sessions():
+    user = get_current_user()
+    if not user:
+        return jsonify({"error": "Unauthorized"}), 401
+    sessions = get_user_sessions(user.user.id)
+    return jsonify(sessions), 200
+
+
 @app.post("/auth/signup")
 def signup():
     """

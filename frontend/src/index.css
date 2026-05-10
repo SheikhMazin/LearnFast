@@ -1,21 +1,182 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600;1,700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap');
 @import "tailwindcss";
 
+/* ── Design tokens ─────────────────────────────────────── */
+:root {
+  --bg:           #0b1709;
+  --bg-2:         #0f1f0c;
+  --sidebar:      #08120607;
+  --sidebar-bg:   #091407;
+  --border:       #1e3318;
+  --border-light: #2a4a22;
+
+  --card:         #f8f4e8;
+  --card-2:       #f2ecd8;
+  --card-line:    #e6dfc6;
+  --card-margin:  #d4a0a0;
+  --card-border:  #c8b990;
+  --card-shadow:  rgba(0, 0, 0, 0.45);
+  --ink:          #1e1a10;
+  --ink-2:        #4a4030;
+  --ink-muted:    #8a7e68;
+
+  --green:        #4a7c38;
+  --green-hover:  #5a9444;
+  --green-dark:   #2e5222;
+  --green-light:  #7ab860;
+  --green-muted:  #3a5e2e;
+
+  --text:         #c8dfc0;
+  --text-muted:   #6e9464;
+  --text-dim:     #3d5a36;
+
+  --success:      #2d6e30;
+  --success-bg:   #1a3e1c;
+  --error:        #8b2222;
+  --error-bg:     #3a1010;
+  --warning:      #7a5e18;
+  --warning-bg:   #3a2e0a;
+}
+
+/* ── Base ──────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+input, button, textarea, select { font-family: inherit; }
+
 body {
-  background-color: #0f1117;
-  color: white;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Lora', Georgia, serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
 }
 
+/* ── Typography ────────────────────────────────────────── */
+.font-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+/* ── Notebook card ─────────────────────────────────────── */
+.notebook-card {
+  background-color: var(--card);
+  background-image:
+    repeating-linear-gradient(
+      transparent,
+      transparent 27px,
+      var(--card-line) 27px,
+      var(--card-line) 28px
+    );
+  border-left: 3px solid var(--card-margin);
+  border-radius: 3px 10px 8px 3px / 5px 3px 10px 5px;
+  box-shadow:
+    3px 5px 18px var(--card-shadow),
+    1px 2px 4px rgba(0,0,0,0.25);
+  color: var(--ink);
+}
+
+.notebook-card-plain {
+  background-color: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 3px 10px 8px 3px / 5px 3px 10px 5px;
+  box-shadow: 2px 3px 10px rgba(0,0,0,0.35);
+  color: var(--ink);
+}
+
+/* Stack ghost cards */
+.notebook-ghost {
+  background-color: var(--card-2);
+  border: 1px solid var(--card-border);
+  border-radius: 3px 10px 8px 3px / 5px 3px 10px 5px;
+}
+
+/* ── Buttons ───────────────────────────────────────────── */
+.btn-primary {
+  background: var(--green);
+  color: #fff;
+  border: none;
+  border-radius: 6px 14px 10px 6px / 8px 6px 14px 8px;
+  font-family: inherit;
+  font-weight: 700;
+  transition: background 0.18s;
+}
+.btn-primary:hover:not(:disabled) { background: var(--green-hover); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-outline {
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--card-border);
+  border-radius: 6px 14px 10px 6px / 8px 6px 14px 8px;
+  font-family: inherit;
+  font-weight: 700;
+  transition: all 0.18s;
+}
+.btn-outline:hover:not(:disabled) {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+}
+.btn-outline:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ── Option buttons (MC, T/F) ──────────────────────────── */
+.option-btn {
+  background: var(--card);
+  border: 1.5px solid var(--card-border);
+  border-radius: 4px 12px 8px 4px / 6px 4px 12px 6px;
+  color: var(--ink);
+  text-align: left;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.option-btn:hover:not(:disabled) {
+  border-color: var(--green);
+  background: #eef5e8;
+}
+.option-btn.selected {
+  border-color: var(--green);
+  background: #dff0d4;
+}
+.option-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Sidebar ───────────────────────────────────────────── */
+.sidebar {
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border);
+}
+
+/* ── Card slide-in animation ───────────────────────────── */
 @keyframes card-slide-in {
-  from {
-    opacity: 0;
-    transform: translateX(32px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(28px) rotate(0.3deg); }
+  to   { opacity: 1; transform: translateX(0) rotate(0); }
 }
+.card-enter { animation: card-slide-in 0.28s ease-out; }
 
-.card-enter {
-  animation: card-slide-in 0.25s ease-out;
+/* ── Inputs ────────────────────────────────────────────── */
+.ink-input {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--green);
+  color: var(--ink);
+  font-family: inherit;
+  outline: none;
 }
+.ink-input::placeholder { color: var(--ink-muted); }
+
+.paper-textarea {
+  background: rgba(255,255,255,0.5);
+  border: 1.5px solid var(--card-border);
+  border-radius: 4px;
+  color: var(--ink);
+  font-family: inherit;
+  resize: none;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.paper-textarea:focus { border-color: var(--green); }
+
+/* ── Scrollbar ─────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }

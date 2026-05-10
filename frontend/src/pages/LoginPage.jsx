@@ -24,63 +24,88 @@ function LoginPage({ onLogin, onGoToSignUp }) {
     setLoading(false);
   };
 
-  const inputCls =
-    "w-full text-sm px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 text-gray-900";
-
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="bg-white rounded-2xl border border-gray-100 p-8 w-full max-w-sm shadow-sm">
+    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--bg)" }}>
+      <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-medium text-gray-900">LearnFast</h1>
-          <p className="text-sm text-gray-400 mt-1">Sign in to continue learning</p>
+          <h1 className="font-title text-5xl mb-1" style={{ color: "var(--green-light)" }}>
+            Vernā
+          </h1>
+          <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+            Sign in to continue learning
+          </p>
         </div>
 
-        {serverError && (
-          <div className="bg-red-50 border border-red-200 text-red-600 text-xs rounded-lg px-3 py-2 mb-4">
-            {serverError}
-          </div>
-        )}
+        <div className="notebook-card p-8">
+          {serverError && (
+            <div className="mb-5 px-4 py-2.5 rounded text-sm font-medium"
+              style={{ background: "var(--error-bg)", color: "#e88", border: "1px solid var(--error)" }}>
+              {serverError}
+            </div>
+          )}
 
-        <div className="space-y-4">
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: "" })); }}
-              onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-              className={inputCls}
-            />
-            {errors.email && <p className="text-xs text-red-400 mt-1">{errors.email}</p>}
+          <div className="space-y-5">
+            <div>
+              <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: "var(--ink-muted)" }}>
+                Email
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: "" })); }}
+                onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                className="w-full px-3 py-2.5 rounded text-sm"
+                style={{
+                  background: "rgba(255,255,255,0.6)",
+                  border: errors.email ? "1.5px solid var(--error)" : "1.5px solid var(--card-border)",
+                  color: "var(--ink)",
+                  outline: "none",
+                }}
+                autoFocus
+              />
+              {errors.email && <p className="text-xs mt-1" style={{ color: "var(--error)" }}>{errors.email}</p>}
+            </div>
+
+            <div>
+              <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: "var(--ink-muted)" }}>
+                Password
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: "" })); }}
+                onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                className="w-full px-3 py-2.5 rounded text-sm"
+                style={{
+                  background: "rgba(255,255,255,0.6)",
+                  border: errors.password ? "1.5px solid var(--error)" : "1.5px solid var(--card-border)",
+                  color: "var(--ink)",
+                  outline: "none",
+                }}
+              />
+              {errors.password && <p className="text-xs mt-1" style={{ color: "var(--error)" }}>{errors.password}</p>}
+            </div>
+
+            <button
+              onClick={handleLogin}
+              disabled={loading}
+              className="btn-primary w-full py-3 text-sm mt-2"
+            >
+              {loading ? "Signing in..." : "Sign in"}
+            </button>
           </div>
 
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: "" })); }}
-              onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-              className={inputCls}
-            />
-            {errors.password && <p className="text-xs text-red-400 mt-1">{errors.password}</p>}
-          </div>
-
-          <button
-            onClick={handleLogin}
-            disabled={loading}
-            className="w-full text-sm py-2.5 rounded-lg bg-gray-900 text-white font-medium mt-2 disabled:opacity-50 hover:bg-gray-800 transition-colors"
-          >
-            {loading ? "Signing in..." : "Sign in"}
-          </button>
+          <p className="text-center text-xs mt-6" style={{ color: "var(--ink-muted)" }}>
+            Don't have an account?{" "}
+            <span
+              onClick={onGoToSignUp}
+              className="cursor-pointer font-semibold hover:underline"
+              style={{ color: "var(--green)" }}
+            >
+              Sign up
+            </span>
+          </p>
         </div>
-
-        <p className="text-center text-xs text-gray-400 mt-6">
-          Don't have an account?{" "}
-          <span onClick={onGoToSignUp} className="text-gray-700 cursor-pointer hover:underline">
-            Sign up
-          </span>
-        </p>
       </div>
     </div>
   );

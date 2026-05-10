@@ -65,4 +65,6 @@ export const api = {
 
   resetSession: (sessionId) =>
     post(`/session/${sessionId}/reset`, {}),
+
+  listSessions: () => get("/sessions"),
 };
