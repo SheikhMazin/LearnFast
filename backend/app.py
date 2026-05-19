@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from dotenv import load_dotenv
 from core.session import create_session, update_session, reset_session, get_session_stats
 from core.difficulty import select_question_type
@@ -18,6 +20,14 @@ load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
+
+limiter = Limiter(
+        get_remote_address,
+        app=app,
+        default_limits=["100 per day", "20 per hour"],
+        storage_uri="memory//", 
+
+        )
 
 # In-memory session store — maps session_id (str) to session dict.
 # Good enough for a hackathon demo. Replace with SQLite or Redis for persistence.
