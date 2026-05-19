@@ -25,7 +25,7 @@ limiter = Limiter(
         get_remote_address,
         app=app,
         default_limits=["100 per day", "20 per hour"],
-        storage_uri="memory//", 
+        storage_uri="memory://", 
 
         )
 
