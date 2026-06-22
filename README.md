@@ -6,6 +6,14 @@ Vernā generates fully native-language lessons, flashcards, and quiz questions o
 
 ---
 
+## Demo
+
+[![Vernā Demo](https://img.youtube.com/vi/3bZddmDYN7M/maxresdefault.jpg)](https://youtu.be/3bZddmDYN7M)
+
+> Click the thumbnail to watch the full demo on YouTube.
+
+---
+
 ## Features
 
 - **AI Curriculum Generation** — enter any topic and get a 6–8 node concept graph built by IBM Granite
